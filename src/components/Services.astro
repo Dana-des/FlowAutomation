@@ -1,0 +1,139 @@
+---
+import Text from "../components/Button.astro";
+
+const services = [
+  {
+    id: " 01 ",
+    title: "Automation & Operations",
+    heading: "Manual work slowing you down?",
+    description:
+      "Consolidate disconnected tools into a high-speed system that runs your business end-to-end.",
+    cards: [1, 2, 3],
+  },
+  {
+    id: " 02 ",
+    title: "Automation & Operations",
+    heading: "Manual work slowing you down?",
+    description:
+      "Consolidate disconnected tools into a high-speed system that runs your business end-to-end.",
+    cards: [1],
+  },
+  {
+    id: " 03 ",
+    title: "Automation & Operations",
+    heading: "Manual work slowing you down?",
+    description:
+      "Consolidate disconnected tools into a high-speed system that runs your business end-to-end.",
+    cards: [1, 2],
+  },
+  {
+    id: " 04 ",
+    title: "Automation & Operations",
+    heading: "Manual work slowing you down?",
+    description:
+      "Consolidate disconnected tools into a high-speed system that runs your business end-to-end.",
+    cards: [1],
+  },
+];
+---
+
+<section class="bg-bg text-text">
+  <div class="container max-w-content py-section-m md:py-section-d">
+
+    <!-- Heading -->
+    <h2 class="text-h2 text-center mb-20">Systems we build</h2>
+
+    <div class="flex flex-col gap-[160px]">
+      {services.map((service) => (
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <!-- LEFT -->
+          <div class="md:sticky md:top-0 md:h-screen flex md:items-center">
+            <div class="flex flex-col gap-4 max-w-[520px]">
+
+              <h6 class="text-h6 text-ui uppercase">
+                [{service.id}] {service.title}
+              </h6>
+
+              <h3 class="text-h3">{service.heading}</h3>
+
+              <p class="text-body text-text/80">
+                {service.description}
+              </p>
+
+            </div>
+          </div>
+
+          <!-- RIGHT -->
+          <div class="flex flex-col gap-6 md:my-[100vh]">
+            {service.cards.map(() => (
+
+              <article class="bg-surface/4 backdrop-blur-card border border-line/10 p-card flex flex-col gap-6">
+
+                <!-- Content -->
+                <div class="flex flex-col gap-4">
+
+                  <div class="flex items-center gap-[10px]">
+                    <div class="w-[10px] h-[10px] rounded-full bg-ui"></div>
+                    <h5 class="text-body">Workflow Automation</h5>
+                  </div>
+
+                  <p class="text-body text-text/80">
+                    We replace manual processes with structured workflows that run reliably and scale with your operations.
+                  </p>
+
+                </div>
+
+                <!-- Divider -->
+                <div class="h-px bg-line/10"></div>
+
+                <!-- Button -->
+                <div class="outcomes-btn inline-block cursor-pointer">
+                     <Text variant="text">OUTCOMES +</Text>
+                 </div>
+
+                <!-- Expand -->
+                    <div class="outcomes-content overflow-hidden max-h-0 opacity-0 transition-all duration-500 ease-in-out">
+                     <div class="pt-2 flex flex-col gap-2 text-text/80">
+                     <p>→ Cost analysis & optimization</p>
+                     <p>→ Resource usage monitoring</p>
+                     <p>→ Scalable infrastructure planning</p>
+                 </div>
+                </div>
+
+              </article>
+
+            ))}
+          </div>
+
+        </div>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+<script>
+  const buttons = document.querySelectorAll(".outcomes-btn");
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const content = btn.nextElementSibling;
+      const label = btn.querySelector("*"); // grabs inner element safely
+
+      const isOpen = content.classList.contains("open");
+
+      if (isOpen) {
+        content.style.maxHeight = "0px";
+        content.style.opacity = "0";
+        content.classList.remove("open");
+        label.textContent = "OUTCOMES +";
+      } else {
+        content.classList.add("open");
+        content.style.maxHeight = content.scrollHeight + "px";
+        content.style.opacity = "1";
+        label.textContent = "OUTCOMES −";
+      }
+    });
+  });
+</script>

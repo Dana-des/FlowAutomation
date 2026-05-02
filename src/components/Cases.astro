@@ -1,0 +1,173 @@
+---
+type Stat = {
+  value: string;
+  label: string;
+};
+
+type Case = {
+  id: string;
+  tag: string;
+  metric: string;
+  metricLabel: string;
+  title: string;
+  desc: string[];
+  stats: Stat[];
+  desktopPlacement: string;
+};
+
+const cases: Case[] = [
+  {
+    id: "[ CASE 01 ]",
+    tag: "E-COMMERCE • CRM",
+    metric: "x10",
+    metricLabel: "FASTER ORDER PROCESSING",
+    title: "E-commerce Automation",
+    desc: [
+      "Manual order processing was slowing down operations and causing frequent errors.",
+      "→ We implemented end-to-end automation for order handling, CRM synchronization, and customer notifications."
+    ],
+    stats: [
+      { value: "150+", label: "orders / day" },
+      { value: "-80%", label: "errors" },
+      { value: "€2k", label: "saved / mo" },
+    ],
+    desktopPlacement: "md:col-span-2 md:mx-auto md:w-[calc(50%-12px)]",
+  },
+  {
+    id: "[ CASE 02 ]",
+    tag: "TELEGRAM • CRM",
+    metric: "85%",
+    metricLabel: "MANUAL WORK REMOVED",
+    title: "Telegram Bot & Lead Automation",
+    desc: [
+      "Leads from Telegram and spreadsheets were handled manually, leading to missed requests and wasted time.",
+      "→ We built a Telegram bot integrated with the client's CRM, automating lead capture, processing, and routing."
+    ],
+    stats: [
+      { value: "3h → 20m", label: "daily ops" },
+      { value: "-90%", label: "errors" },
+      { value: "€1.2k", label: "saved / mo" },
+    ],
+    desktopPlacement: "md:col-start-2",
+  },
+  {
+    id: "[ CASE 03 ]",
+    tag: "CUSTOM SOFTWARE",
+    metric: "-95%",
+    metricLabel: "SYSTEM CRASHES",
+    title: "Custom Software Optimization",
+    desc: [
+      "Legacy software suffered from slow performance, instability, and limited scalability.",
+      "→ We redesigned and rebuilt the system with a modern, optimized architecture."
+    ],
+    stats: [
+      { value: "x3-5", label: "faster" },
+      { value: "-60%", label: "maintenance cost" },
+      { value: "xN", label: "scalable" },
+    ],
+    desktopPlacement: "md:col-start-1",
+  },
+  {
+    id: "[ CASE 04 ]",
+    tag: "MVP • CRM",
+    metric: "-50%",
+    metricLabel: "DEVELOPMENT COST",
+    title: "MVP & Custom CRM Development",
+    desc: [
+      "The client needed a fast, cost-efficient way to launch a product and manage operations.",
+      "→ We developed an MVP platform along with a custom CRM tailored to their workflows."
+    ],
+    stats: [
+      { value: "2-4w", label: "launch" },
+      { value: "100+", label: "users / mo" },
+      { value: ">>>", label: "growth ready" },
+    ],
+    desktopPlacement: "md:col-span-2 md:mx-auto md:w-[calc(50%-12px)]",
+  },
+];
+---
+
+<section id="cases-section" class="bg-bg" data-cases-section>
+  <div class="page-container section">
+    <div class="md:relative">
+      
+      <div class="flex flex-col justify-center py-12 md:sticky md:top-0 md:min-h-screen md:py-0">
+        <header 
+          class="mx-auto text-center transition-opacity duration-300 ease-out" 
+          data-cases-text
+        >
+          <h2 class="text-h2 text-text">Quiet flows. Loud results</h2>
+        </header>
+      </div>
+
+      <div class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 md:pb-section-d pb-section-m">
+        {cases.map((card) => (
+          <article class={`card flex w-full flex-col gap-6 p-card border border-line/10 bg-surface/4 backdrop-blur-card text-left ${card.desktopPlacement}`}>
+            
+            <div class="flex items-center justify-between text-small uppercase text-text/20">
+              <span>{card.id}</span>
+              <span>{card.tag}</span>
+            </div>
+
+            <div class="flex items-baseline gap-2.5">
+              <span class="text-h1 font-normal text-ui">{card.metric}</span>
+              <span class="text-h6 uppercase text-text/80">{card.metricLabel}</span>
+            </div>
+
+            <hr class="border-line/10" />
+
+            <div class="flex flex-col gap-3">
+              <h3 class="text-h5 text-text">{card.title}</h3>
+              <!-- The descriptions are mapped perfectly into separate paragraph blocks with a 16px (gap-4) space -->
+              <div class="flex flex-col gap-4">
+                {card.desc.map((paragraph) => (
+                  <p class="text-body text-text/80">{paragraph}</p>
+                ))}
+              </div>
+            </div>
+
+            <div class="flex items-start justify-between">
+              {card.stats.map((stat) => (
+                <div class="flex flex-col gap-0">
+                  <span class="text-body text-primary">{stat.value}</span>
+                  <span class="text-small font-normal lowercase text-text/80">{stat.label}</span>
+                </div>
+              ))}
+            </div>
+
+          </article>
+        ))}
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<script>
+  function initCasesFade() {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const textEl = document.querySelector("[data-cases-text]");
+    const sectionEl = document.querySelector("[data-cases-section]");
+    
+    if (!textEl || !sectionEl) return;
+
+    const update = () => {
+      if (!mq.matches) {
+        textEl.classList.remove("opacity-20");
+        return;
+      }
+      
+      const scrolledPast = -sectionEl.getBoundingClientRect().top;
+      // Triggers the fade out using the exact same logic Cursor AI used
+      const shouldFade = scrolledPast > window.innerHeight * 0.5;
+      textEl.classList.toggle("opacity-20", shouldFade);
+    };
+
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    mq.addEventListener?.("change", update);
+  }
+
+  initCasesFade();
+</script>

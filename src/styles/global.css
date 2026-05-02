@@ -1,0 +1,45 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap");
+
+@import "tailwindcss";
+@config "../../tailwind.config.mjs";
+
+:root {
+  --c-dark: 5 7 15;
+  --c-white: 255 255 255;
+  --c-light-blue: 144 188 232;
+  --c-ocean-blue: 51 111 232;
+
+  --c-bg: var(--c-dark);
+  --c-text: var(--c-white);
+  --c-primary: var(--c-light-blue);
+  --c-primary-hover: var(--c-ocean-blue);
+  --c-ui: var(--c-ocean-blue);
+  --c-surface: var(--c-white);
+  --c-line: var(--c-white);
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-bg text-text font-sora antialiased;
+    font-feature-settings: "ss01" on, "ss02" on, "cv01" on, "cv02" on;
+  }
+}
+
+@layer components {
+  .page-container {
+    @apply container max-w-content;
+  }
+
+  .section {
+    @apply py-section-m md:py-section-d;
+  }
+
+  .card {
+    @apply rounded-none border border-line/10 bg-surface/4 p-card backdrop-blur-card;
+  }
+}

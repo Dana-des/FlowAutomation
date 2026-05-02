@@ -1,0 +1,108 @@
+---
+type Card = {
+  title: string;
+  text: string;
+  iconSrc: string;
+  iconAlt: string;
+  desktopPlacement: string;
+};
+
+const cards: Card[] = [
+  {
+    title: "Trusted Experience",
+    text: "Over five years of mastering automation tools to deliver high-performing workflows.",
+    iconSrc: "/Icons/Trusted_experience.svg",
+    iconAlt: "Trusted experience icon",
+    desktopPlacement: "md:col-start-2 md:row-start-1",
+  },
+  {
+    title: "Direct Engineering",
+    text: "No intermediaries: collaborate directly with the architects building your system.",
+    iconSrc: "/Icons/Direct_engeneering.svg",
+    iconAlt: "Direct engineering icon",
+    desktopPlacement: "md:col-start-3 md:row-start-2",
+  },
+  {
+    title: "Efficient Deployment",
+    text: "Expert proficiency ensuring rapid delivery without compromising system stability.",
+    iconSrc: "/Icons/Efficient_deployment.svg",
+    iconAlt: "Efficient deployment icon",
+    desktopPlacement: "md:col-start-1 md:row-start-3",
+  },
+  {
+    title: "European Excellence",
+    text: "Global standards and rigorous technical precision in every workflow.",
+    iconSrc: "/Icons/European_excellence.svg",
+    iconAlt: "European excellence icon",
+    desktopPlacement: "md:col-start-2 md:row-start-4",
+  },
+];
+---
+
+<section id="why-us" class="bg-bg text-text" data-about-section>
+  <div class="page-container section">
+    <div class="flex flex-col gap-12">
+      <div class="md:sticky md:top-0 md:flex md:min-h-screen md:items-center">
+        <header
+          class="mx-auto flex max-w-4xl flex-col items-center gap-8 text-center transition-opacity duration-300 ease-out"
+          data-about-text
+        >
+          <h6 class="text-h6 uppercase text-text/20">WHY US</h6>
+          <h4 class="text-h4 text-text">
+            We are an independent team of developers specializing in flow automation. We build
+            reliable, high-speed systems that help your business run itself.
+          </h4>
+        </header>
+      </div>
+
+      <div>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-3 md:grid-rows-4">
+          {cards.map((card) => (
+            <article class={`card ${card.desktopPlacement}`}>
+              <div class="flex flex-col gap-8">
+                <img
+                  src={card.iconSrc}
+                  width="40"
+                  height="40"
+                  alt={card.iconAlt}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div class="space-y-2">
+                  <h5 class="text-h5 text-text">{card.title}</h5>
+                  <p class="text-body text-text/80">{card.text}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  function initAboutFade() {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const textEl = document.querySelector("[data-about-text]");
+    const sectionEl = document.querySelector("[data-about-section]");
+    if (!textEl || !sectionEl) return;
+
+    const update = () => {
+      if (!mq.matches) {
+        textEl.classList.remove("opacity-20");
+        return;
+      }
+      const scrolledPast = -sectionEl.getBoundingClientRect().top;
+      const shouldFade = scrolledPast > window.innerHeight * 0.5;
+      textEl.classList.toggle("opacity-20", shouldFade);
+    };
+
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    mq.addEventListener?.("change", update);
+  }
+
+  initAboutFade();
+</script>

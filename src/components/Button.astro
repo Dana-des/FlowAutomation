@@ -1,0 +1,98 @@
+---
+type ButtonVariant = "primary" | "secondary" | "small" | "text" | "nav_button";
+
+interface Props {
+  href?: string;
+  label?: string;
+  variant?: ButtonVariant;
+  active?: boolean;
+  target?: string;
+  ariaLabel?: string;
+  class?: string;
+}
+
+const {
+  href = "#",
+  label = "Button",
+  variant = "primary",
+  active = false,
+  target,
+  ariaLabel,
+  class: className = "",
+} = Astro.props;
+
+const baseClasses =
+  "group relative inline-flex items-center justify-center overflow-hidden no-underline transition-colors duration-600 ease-out hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ui focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
+
+const variants: Record<ButtonVariant, string> = {
+  primary:
+    "h-auto rounded-none bg-primary px-6 py-3 text-button uppercase text-bg",
+
+  secondary:
+    "h-auto rounded-none border border-line/10 bg-surface/4 px-6 py-3 text-button uppercase text-text hover-glow",
+
+  small:
+    "h-auto rounded-none bg-text px-[14px] py-2 text-small uppercase text-bg",
+
+  text:
+    "h-auto overflow-visible rounded-none bg-transparent p-0 text-small uppercase text-text/20 hover:text-ui",
+
+  nav_button:
+    "h-auto overflow-visible rounded-none bg-transparent p-0 text-small font-normal uppercase text-text transition-colors duration-300 ease-out hover:text-text/20",
+};
+
+const labelClasses: Record<ButtonVariant, string> = {
+  primary:
+    "relative z-10 transition-colors duration-600 ease-out group-hover:text-text",
+
+  secondary:
+    "relative z-10",
+
+  small:
+    "relative z-10 transition-colors duration-600 ease-out group-hover:text-text",
+
+  text:
+    `relative z-10 transition-colors duration-300 ease-out ${
+      active ? "text-ui" : "text-text/20 group-hover:text-ui"
+    }`,
+
+  nav_button: "relative z-10",
+};
+
+const circleClasses: Record<ButtonVariant, string> = {
+  primary:
+    "pointer-events-none absolute left-1/2 bottom-0 z-0 aspect-square w-[140%] -translate-x-1/2 translate-y-full rounded-full bg-primary-hover transition-transform duration-600 ease-out group-hover:translate-y-[18%]",
+
+  secondary:
+    "hidden",
+
+  small:
+    "pointer-events-none absolute left-1/2 bottom-0 z-0 aspect-square w-[150%] -translate-x-1/2 translate-y-full rounded-full bg-primary-hover transition-transform duration-600 ease-out group-hover:translate-y-[18%]",
+
+  text:
+    "hidden",
+
+  nav_button: "hidden",
+};
+
+const activeClasses =
+  variant === "text" && active ? "text-ui" : "";
+
+const rel = target === "_blank" ? "noopener noreferrer" : undefined;
+---
+
+<a
+  href={href}
+  target={target}
+  rel={rel}
+  aria-label={ariaLabel ?? label}
+  class={`${baseClasses} ${variants[variant]} ${activeClasses} ${className}`}
+>
+  {(variant === "primary" || variant === "small") && (
+    <span aria-hidden="true" class={circleClasses[variant]}></span>
+  )}
+
+  <span class={labelClasses[variant]}>
+    <slot>{label}</slot>
+  </span>
+</a>

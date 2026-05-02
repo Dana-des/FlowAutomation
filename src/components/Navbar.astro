@@ -1,0 +1,58 @@
+---
+import Button from "./Button.astro";
+
+type NavItem = { label: string; href: string };
+
+const navItems: NavItem[] = [
+  { label: "Home", href: "/" },
+  { label: "Why us", href: "/#why-us" },
+  { label: "Services", href: "/#services" },
+  { label: "Cases", href: "/#cases" },
+];
+---
+
+<header class="fixed top-[24px] left-1/2 z-[999] -translate-x-1/2 w-max">
+  <nav
+    aria-label="Primary"
+    class="flex items-center gap-[120px] border border-line/10 bg-surface/4 pl-[16px] pr-[8px] py-[8px] backdrop-blur-card"
+  >
+      <a href="/" class="inline-flex items-center gap-2 no-underline">
+        <span class="h-2.5 w-2.5 rounded-full bg-ui"></span>
+        <span class="text-h6 text-text">FlowAutomation</span>
+      </a>
+
+      <div class="flex flex-1 items-center justify-end">
+        <div class="hidden items-center gap-6 md:flex">
+          <ul class="flex items-center gap-6" aria-label="Primary links">
+            {navItems.map((item) => (
+              <li>
+                <Button variant="nav_button" href={item.href} ariaLabel={item.label}>
+                  {item.label}
+                </Button>
+              </li>
+            ))}
+          </ul>
+
+          <Button variant="small" href="/#quote" ariaLabel="Get a quote">
+            Get a quote
+          </Button>
+        </div>
+
+        <button
+         type="button"
+            class="inline-flex h-10 w-10 items-center justify-center bg-surface/4 backdrop-blur-card transition-colors duration-300 ease-out md:hidden"
+         aria-label="Open menu"
+      >
+          <img
+            src="/Icons/Menu%20Icon.svg"
+            width="40"
+            height="40"
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+      </div>
+    </nav>
+  </div>
+</header>
