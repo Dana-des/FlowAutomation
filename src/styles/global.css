@@ -43,3 +43,9 @@
     @apply rounded-none border border-line/10 bg-surface/4 p-card backdrop-blur-card;
   }
 }
+
+
+::selection {
+  background: rgb(var(--c-primary)/0.4);
+  color: rgb(var(--c-white));
+}

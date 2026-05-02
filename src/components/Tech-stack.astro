@@ -1,0 +1,92 @@
+---
+const techStack = [
+  { name: "Python", icon: "/Icons/Python.svg" },
+  { name: "Node.js", icon: "/Icons/Node_JS.svg" },
+  { name: "C++", icon: "/Icons/C++.svg" },
+  { name: "Rust", icon: "/Icons/Rust.svg" },
+  { name: "Telegram API", icon: "/Icons/Telegram_API.svg" },
+  { name: "Rest API", icon: "/Icons/Rest_API.svg" },
+  { name: "PostgreSQL", icon: "/Icons/PostgreSQL.svg" },
+  { name: "Redis", icon: "/Icons/Redis.svg" },
+  { name: "AWS/Azure", icon: "/Icons/AWS_Azure.svg" },
+];
+---
+
+<section 
+  aria-labelledby="tech-heading" 
+  class="w-full overflow-hidden bg-bg py-section-m md:py-section-d flex flex-col items-center gap-20"
+>
+  <h6 
+    id="tech-heading" 
+    class="text-center text-h6 uppercase text-text/20"
+  >
+    Technology stack we work with
+  </h6>
+
+  <!-- Marquee Wrapper -->
+  <div class="marquee-wrapper flex w-full overflow-hidden">
+    <div class="marquee-container grid w-full grid-cols-2 justify-items-center gap-x-6 gap-y-10 md:flex md:w-max md:flex-nowrap md:gap-6">
+      
+      {techStack.map((tech) => (
+        <article class="flex shrink-0 flex-col items-center gap-4 md:min-w-[120px]">
+          <img 
+            src={tech.icon} 
+            alt={`${tech.name} logo`} 
+            class="h-auto w-auto object-contain " 
+            loading="lazy" 
+          />
+          <span class="text-body text-text/80">{tech.name}</span>
+        </article>
+      ))}
+
+      <!-- Set 2: Hidden on Mobile, visible on Desktop to create the infinite loop -->
+      {techStack.map((tech) => (
+        <article 
+          class="hidden shrink-0 flex-col items-center gap-4 md:flex md:min-w-[120px]" 
+          aria-hidden="true"
+        >
+          <img 
+            src={tech.icon} 
+            alt={`${tech.name} logo`} 
+            class="h-auto w-auto object-contain" 
+            loading="lazy" 
+          />
+          <span class="text-body text-text/80">{tech.name}</span>
+        </article>
+      ))}
+      
+    </div>
+  </div>
+</section>
+
+<style>
+  /* 
+    Only apply the animation on desktop screens (768px and up) 
+    to respect the 2-column static grid on mobile.
+  */
+  @media (min-width: 768px) {
+    .marquee-container {
+      /* Adjust '30s' to make the animation faster or slower */
+      animation: marquee 30s linear infinite;
+    }
+    
+    /* Pause animation on hover */
+    .marquee-wrapper:hover .marquee-container {
+      animation-play-state: paused;
+    }
+  }
+
+  /* 
+    Translates exactly 50% to the left. 
+    Because Set 1 and Set 2 are identical and share the same gaps, 
+    the loop is mathematically seamless.
+  */
+  @keyframes marquee {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+</style>

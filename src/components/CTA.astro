@@ -1,0 +1,61 @@
+---
+import ContactForm from "./ContactForm.astro";
+
+const socials = [
+  { name: "Telegram", icon: "/Icons/Telegram.svg", link: "#" },
+  { name: "WhatsApp", icon: "/Icons/WhatsApp.svg", link: "#" },
+  { name: "Discord", icon: "/Icons/Discord.svg", link: "#" },
+  { name: "LinkedIn", icon: "/Icons/LinkedIn.svg", link: "#" },
+];
+---
+
+<section id="contact" class="flex w-full flex-col items-center gap-20 bg-bg py-section-m text-text md:py-section-d">
+  
+  <h2 class="max-w-4xl text-center text-h2 text-text">
+    Ready to automate your business? Contact us today
+  </h2>
+
+  <!-- Form Container -->
+  <!-- w-full ensures it fills width on mobile; max-w sets the desktop boundary -->
+  <div class="w-full md:w-[calc(50%-12px)] md:mx-auto px-4 md:px-0">
+    <ContactForm />
+  </div>
+
+  <!-- Social Media & Email Row -->
+  <div class="flex w-full flex-wrap items-center justify-center gap-5 px-4">
+    
+    <!-- Label -->
+    <span class="text-h6 uppercase text-text/20">
+      Find us on social media
+    </span>
+
+    <!-- Social Icons Container -->
+    <div class="flex gap-2">
+      {socials.map((social) => (
+        <a 
+          href={social.link} 
+          aria-label={social.name}
+          class="flex h-[52px] w-[52px] items-center justify-center rounded-none border border-line/10 bg-surface/4 backdrop-blur-card transition-colors hover:border-ui"
+        >
+          <img 
+            src={social.icon} 
+            alt={`${social.name} icon`} 
+            class="h-6 w-6" 
+            loading="lazy" 
+          />
+        </a>
+      ))}
+    </div>
+
+    <!-- Email Card -->
+    <!-- py-2 = 8px, px-4 = 16px -->
+    <a 
+      href="mailto:info@flowautomation.eu" 
+      class="flex h-[52px] items-center rounded-none border border-line/10 bg-surface/4 px-4 py-2 text-h6 lowercase backdrop-blur-card transition-colors hover:border-ui"
+    >
+      info@flowautomation.eu
+    </a>
+
+  </div>
+
+</section>

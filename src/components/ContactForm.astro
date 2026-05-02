@@ -1,0 +1,52 @@
+---
+import Button from "../components/Button.astro";
+---
+
+<div class="w-full bg-surface/4 backdrop-blur-card border border-line/10 p-16">
+  <form class="w-full flex flex-col gap-8">
+
+    <!-- Inputs Wrapper -->
+    <div class="flex flex-col gap-4">
+
+      <!-- Full Name -->
+      <div class="group">
+        <input
+          type="text"
+          name="name"
+          placeholder="Full name"
+          required
+          class="w-full bg-transparent border border-line/20 px-5 py-4 text-body text-text placeholder:text-text/40 outline-none transition-colors duration-300 focus:border-ui"
+        />
+      </div>
+
+      <!-- Email -->
+      <div class="group">
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          required
+          class="w-full bg-transparent border border-line/20 px-5 py-4 text-body text-text placeholder:text-text/40 outline-none transition-colors duration-300 focus:border-ui"
+        />
+      </div>
+
+      <!-- Message -->
+      <div class="group">
+        <textarea
+          name="message"
+          rows="6"
+          placeholder="Message"
+          required
+          class="w-full bg-transparent border border-line/20 px-5 py-4 text-body text-text placeholder:text-text/40 outline-none transition-colors duration-300 focus:border-ui resize-none"
+        ></textarea>
+      </div>
+
+    </div>
+
+    <!-- Button -->
+    <Button variant="primary" class="w-full justify-center">
+      LET’S AUTOMATE →
+    </Button>
+
+  </form>
+</div>
