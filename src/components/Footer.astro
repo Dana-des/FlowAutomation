@@ -1,0 +1,128 @@
+---
+const socials = [
+  { name: "Telegram", icon: "/Icons/Telegram.svg", link: "#" },
+  { name: "WhatsApp", icon: "/Icons/WhatsApp.svg", link: "#" },
+  { name: "Discord", icon: "/Icons/Discord.svg", link: "#" },
+  { name: "LinkedIn", icon: "/Icons/LinkedIn.svg", link: "#" },
+];
+---
+
+<footer class="w-full overflow-hidden bg-bg py-[80px] text-text">
+  <div class="container max-w-content flex flex-col gap-[80px]">
+    
+    <!-- Top Section: Columns Layout -->
+    <div class="flex flex-col md:flex-row gap-12 md:gap-0 w-full justify-between">
+      
+      <!-- Left Column: 50% (Logo & Copyright) -->
+      <div class="flex w-full flex-col gap-2 md:w-1/2">
+        <div class="flex items-center gap-2.5">
+          <!-- Blue Dot -->
+          <span class="block h-2.5 w-2.5 rounded-full bg-ui"></span>
+          <span class="text-body">FlowAutomation</span>
+        </div>
+        <p class="max-w-[320px] text-h6 font-normal leading-[1.4] text-text/60">
+          © 2026 FlowAutomation — Smart IT Solutions for Global Business
+        </p>
+      </div>
+
+      <!-- Right Column: 50% (Menu Links in 3 Columns) -->
+      <nav class="grid w-full grid-cols-2 gap-8 md:w-1/2 md:grid-cols-3" aria-label="Footer Navigation">
+        
+        <!-- ABOUT -->
+        <div class="flex flex-col gap-4">
+          <h6 class="text-small uppercase font-normal text-text/20">About</h6>
+          <ul class="flex flex-col gap-0">
+            <li><a href="#" class="text-small text-text/80 transition-colors duration-300 hover:text-text/20">Why us</a></li>
+            <li><a href="#" class="text-small text-text/80 transition-colors duration-300 hover:text-text/20">Technology stack</a></li>
+          </ul>
+        </div>
+
+        <!-- SERVICES -->
+        <div class="flex flex-col gap-4">
+          <h6 class="text-small uppercase font-normal text-text/20">Services</h6>
+          <ul class="flex flex-col gap-0">
+            <li><a href="#" class="text-small text-text/80 transition-colors duration-300 hover:text-text/20">Automation & Operations</a></li>
+            <li><a href="#" class="text-small text-text/80 transition-colors duration-300 hover:text-text/20">AI & Interaction</a></li>
+            <li><a href="#" class="text-small text-text/80 transition-colors duration-300 hover:text-text/20">Product & Engineering</a></li>
+            <li><a href="#" class="text-small text-text/80 transition-colors duration-300 hover:text-text/20">Security</a></li>
+          </ul>
+        </div>
+
+        <!-- CONTACT -->
+        <div class="flex flex-col gap-4">
+          <h6 class="text-small uppercase font-normal text-text/20">Contact</h6>
+          <div class="flex flex-col gap-2">
+            <a href="mailto:info@flowautomation.eu" class="text-small text-text/80 transition-colors duration-300 hover:text-text/20">
+              info@flowautomation.eu
+            </a>
+            
+            <!-- Social Media Icons Wrapper -->
+            <div class="mt-2 flex items-center gap-4">
+              {socials.map((social) => (
+                <a 
+                  href={social.link} 
+                  aria-label={social.name}
+                  class="transition-opacity duration-300 hover:opacity-20"
+                >
+                  <img 
+                    src={social.icon} 
+                    alt={`${social.name} icon`} 
+                    class="h-6 w-6 object-contain" 
+                    loading="lazy" 
+                  />
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+
+      </nav>
+    </div>
+
+    <!-- Bottom Section: Huge Marquee Logo Text -->
+<div class="footer-marquee" aria-hidden="true">
+  <div class="footer-marquee-track">
+    <span class="huge-text">FlowAutomation</span>
+    <span class="huge-text">FlowAutomation</span>
+  </div>
+</div>
+
+
+
+  </div>
+</footer>
+
+<style>
+  .footer-marquee {
+  width: 100%;
+  overflow: visible;
+}
+
+.footer-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+.huge-text {
+  flex: 0 0 auto;
+  padding-right: 0.25em;
+  font-family: Sora, sans-serif;
+  font-size: clamp(3rem, 13vw, 180px);
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  color: rgb(var(--c-ui));
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+</style>
