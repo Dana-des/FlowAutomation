@@ -96,7 +96,7 @@ const cases: Case[] = [
           class="mx-auto text-center transition-opacity duration-300 ease-out" 
           data-cases-text
         >
-          <h2 class="text-h2 text-text">Quiet flows. Loud results</h2>
+          <h2 class="text-h2 text-text lg:text-h2-lg">Quiet flows. Loud results</h2>
         </header>
       </div>
 
@@ -110,14 +110,14 @@ const cases: Case[] = [
             </div>
 
             <div class="flex items-baseline gap-2.5">
-              <span class="text-h1 font-normal text-ui">{card.metric}</span>
+              <span class="text-h1 font-normal text-ui lg:text-h1-lg">{card.metric}</span>
               <span class="text-h6 uppercase text-text/80">{card.metricLabel}</span>
             </div>
 
             <hr class="border-line/10" />
 
             <div class="flex flex-col gap-3">
-              <h3 class="text-h5 text-text">{card.title}</h3>
+              <h3 class="text-h5 text-text lg:text-h5-lg">{card.title}</h3>
               <!-- The descriptions are mapped perfectly into separate paragraph blocks with a 16px (gap-4) space -->
               <div class="flex flex-col gap-4">
                 {card.desc.map((paragraph) => (
