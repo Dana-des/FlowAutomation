@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import "../styles/hover-border.css";
+import hoverScript from "../scripts/hoverBorder.ts";
 
 const {
   title = "Website",
@@ -23,8 +24,10 @@ const {
     <title>Flow Automation</title>
   </head>
 
-  <body class="bg-background text-text antialiased">
+  <body class="bg-bg text-text antialiased">
     <slot />
-    <script type="module" src="/src/scripts/hoverBorder.ts"></script>
+    <script type="module">
+  import init from "{hoverScript}";
+</script>
   </body>
 </html>
