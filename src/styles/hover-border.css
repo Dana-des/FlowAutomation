@@ -1,32 +1,59 @@
+.hover-border {
+  position: relative;
+  border-radius: inherit;
+  overflow: hidden;
+}
 
-  
-  /* THIS is the animated border layer */
-  .hover-border::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px; /* border thickness */
-    pointer-events: none;
-  
-    background: radial-gradient(
-      120px circle at var(--x, 50%) var(--y, 50%),
-      rgb(var(--c-ui) / 0.8),
-      transparent 100%
-    );
-  
-    /* 🔥 THIS is the important part — mask everything except border */
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-  
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  
-  /* show only on hover */
-  .hover-border:hover::before {
-    opacity: 1;
-  }
+/* ✅ BASE BORDER (this replaces your real border) */
+.hover-border::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+
+  background: rgb(var(--c-line) / 0.1);
+
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ✅ GLOW (perfectly aligned ON TOP of border) */
+.hover-border::before {
+  content: "";
+  position: absolute;
+
+  /* 🔥 KEY: same geometry, not inset */
+  inset: 0;
+
+  border-radius: inherit;
+  padding: 1px;
+
+  pointer-events: none;
+  z-index: 2;
+
+  background: radial-gradient(
+    120px circle at var(--x, 50%) var(--y, 50%),
+    rgb(var(--c-ui) / 0.9),
+    transparent 60%
+  );
+
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.hover-border:hover::before {
+  opacity: 1;
+}

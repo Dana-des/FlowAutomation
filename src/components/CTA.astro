@@ -2,10 +2,10 @@
 import ContactForm from "./ContactForm.astro";
 
 const socials = [
-  { name: "Telegram", icon: "/Icons/Telegram.svg", link: "#" },
-  { name: "WhatsApp", icon: "/Icons/WhatsApp.svg", link: "#" },
-  { name: "Discord", icon: "/Icons/Discord.svg", link: "#" },
-  { name: "LinkedIn", icon: "/Icons/LinkedIn.svg", link: "#" },
+  { name: "Telegram", icon: "/Icons/Telegram.svg", link: "https://t.me/Groot_Ben" },
+  { name: "WhatsApp", icon: "/Icons/WhatsApp.svg", link: "https://wa.me/+393513379783" },
+  { name: "Discord", icon: "/Icons/Discord.svg", link: "https://discord.gg/no_name_no_id" },
+  { name: "LinkedIn", icon: "/Icons/LinkedIn.svg", link: "https://www.linkedin.com/in/artem-zlobin%F0%9F%87%AE%F0%9F%87%B9-518173347?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" },
 ];
 ---
 
@@ -33,9 +33,11 @@ const socials = [
     <div class="flex gap-2">
       {socials.map((social) => (
         <a 
-          href={social.link} 
+          href={social.link}
+          target="_blank"
+          rel="noopener noreferrer"
           aria-label={social.name}
-          class="flex h-[52px] w-[52px] items-center justify-center rounded-none border border-line/10 bg-surface/4 backdrop-blur-card transition-colors hover:border-ui"
+          class="hover-border flex h-[52px] w-[52px] items-center justify-center rounded-none bg-surface/4 backdrop-blur-card"
         >
           <img 
             src={social.icon} 
@@ -51,7 +53,7 @@ const socials = [
     <!-- py-2 = 8px, px-4 = 16px -->
     <a 
       href="mailto:info@flowautomation.eu" 
-      class="flex h-[52px] items-center rounded-none border border-line/10 bg-surface/4 px-4 py-2 text-h6 lowercase backdrop-blur-card transition-colors hover:border-ui"
+      class="hover-border flex h-[52px] items-center rounded-none bg-surface/4 px-4 py-2 text-h6 lowercase backdrop-blur-card"
     >
       info@flowautomation.eu
     </a>

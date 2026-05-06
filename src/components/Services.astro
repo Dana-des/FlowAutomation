@@ -8,15 +8,37 @@ const services = [
     heading: "Manual work slowing you down?",
     description:
       "Consolidate disconnected tools into a high-speed system that runs your business end-to-end.",
-    cards: [1, 2, 3],
+    cards: [
+      {
+        title: "Workflow Automation",
+        description: "We replace manual processes with structured workflows that run reliably and scale with your operations.",
+        outcomes: ["Process mapping & bottleneck analysis", "Conditional logic & triggers", "Error-safe workflows"]
+      },
+      {
+        title: "System Integration",
+        description: "We connect your tools into a unified system with seamless data flow across platforms.",
+        outcomes: ["API integrations & middleware", "Real-time, bi-directional sync", "Cross-system workflow orchestration"]
+      },
+      {
+        title: "FinOps",
+        description: "We bring visibility and control to your infrastructure costs without sacrificing performance.",
+        outcomes: ["Cost analysis & optimization", "Resource usage monitoring", "Scalable infrastructure planning"]
+      }
+    ],
   },
   {
     id: " 02 ",
     title: "AI & Interaction",
     heading: "Slow responses killing growth?",
     description:
-      "Scale your communication with systems that act and respond instantly.",
-    cards: [1],
+      "Scale your communication with systems that act and respond instantly.",
+    cards: [
+      {
+        title: "Automated Conversations",
+        description: "We turn repetitive communication into structured systems that respond, act, and trigger workflows automatically.",
+        outcomes: ["Telegram, Slack, WhatsApp bots", "Conversation logic & command flows", "System-triggered actions & responses"]
+      }
+    ],
   },
   {
     id: " 03 ",
@@ -24,7 +46,18 @@ const services = [
     heading: "Current tools don’t fit?",
     description:
       "Stop adapting to rigid software. Build systems that adapt to your workflow.",
-    cards: [1, 2],
+    cards: [
+      {
+        title: "Custom Software",
+        description: "We design and build internal tools and systems tailored to your exact business processes.",
+        outcomes: ["Business logic architecture", "Scalable backend systems", "Admin panels & internal tools"]
+      },
+      {
+        title: "Web Development",
+        description: "We create high-performance websites and platforms aligned with your product and business goals.",
+        outcomes: ["Frontend & backend development", "Performance and scalability optimization", "CMS or custom-built solutions"]
+      }
+    ],
   },
   {
     id: " 04 ",
@@ -32,7 +65,13 @@ const services = [
     heading: "Unseen risks in your data?",
     description:
       "Shield your entire infrastructure by neutralizing threats before they become liabilities.",
-    cards: [1],
+    cards: [
+      {
+        title: "Security Assessment (Pentest)",
+        description: "We identify and eliminate critical vulnerabilities before they can be exploited in real-world scenarios.",
+        outcomes: ["Application & infrastructure testing", "Business logic and access control analysis", "Clear remediation plan & re-testing"]
+      }
+    ],
   },
 ];
 ---
@@ -50,55 +89,49 @@ const services = [
           <!-- LEFT -->
           <div class="md:sticky md:top-0 md:h-screen flex md:items-center">
             <div class="flex flex-col gap-4 max-w-[520px]">
-
               <h6 class="text-h6 text-ui uppercase">
                 [{service.id}] {service.title}
               </h6>
-
               <h3 class="text-h3 lg:text-h3-lg">{service.heading}</h3>
-
               <p class="text-body text-text/80">
                 {service.description}
               </p>
-
             </div>
           </div>
 
           <!-- RIGHT -->
           <div class="flex flex-col gap-6 md:my-[100vh]">
-            {service.cards.map(() => (
+            {service.cards.map((card) => (
 
-              <article class="bg-surface/4 backdrop-blur-card border border-line/10 p-card flex flex-col gap-6">
+              <!-- Removed 'gap-6' here to fix the spacing issue -->
+              <article class="hover-border bg-surface/4 backdrop-blur-card p-card flex flex-col">
 
-                <!-- Content -->
-                <div class="flex flex-col gap-4">
-
+                <!-- Content (Added mb-6 here) -->
+                <div class="flex flex-col gap-4 mb-6">
                   <div class="flex items-center gap-2.5">
                     <div class="w-[10px] h-[10px] rounded-full bg-ui"></div>
-                    <h5 class="text-body">Workflow Automation</h5>
+                    <h5 class="text-body">{card.title}</h5>
                   </div>
-
                   <p class="text-body text-text/80">
-                    We replace manual processes with structured workflows that run reliably and scale with your operations.
+                    {card.description}
                   </p>
-
                 </div>
 
-                <!-- Divider -->
-                <div class="h-px bg-line/10"></div>
+                <!-- Divider (Added mb-6 here) -->
+                <div class="h-px bg-line/10 mb-6"></div>
 
                 <!-- Button -->
                 <div class="outcomes-btn inline-block cursor-pointer">
-                     <Text variant="text">OUTCOMES +</Text>
-                 </div>
+                  <Text variant="text">OUTCOMES +</Text>
+                </div>
 
-                <!-- Expand -->
-                    <div class="outcomes-content overflow-hidden max-h-0 opacity-0 transition-all duration-500 ease-in-out">
-                     <div class="pt-2 flex flex-col gap-1 text-text/80">
-                     <p>→ Process mapping & bottleneck analysis</p>
-                     <p>→ Conditional logic & triggers</p>
-                     <p>→ Error-safe workflows</p>
-                 </div>
+                <!-- Expand (Added pt-4 inside so space only appears when open) -->
+                <div class="outcomes-content overflow-hidden max-h-0 opacity-0 transition-all duration-500 ease-in-out">
+                  <div class="pt-4 flex flex-col gap-1 text-text/80">
+                    {card.outcomes.map((outcome) => (
+                      <p>→ {outcome}</p>
+                    ))}
+                  </div>
                 </div>
 
               </article>
@@ -117,7 +150,12 @@ const services = [
   const buttons = document.querySelectorAll(".outcomes-btn");
 
   buttons.forEach((btn) => {
-    btn.addEventListener("click", () => {
+    // 1. Add 'e' (the event object) as a parameter
+    btn.addEventListener("click", (e) => {
+      
+      // 2. Stop the browser from jumping to the top of the page
+      e.preventDefault(); 
+
       const content = btn.nextElementSibling;
       const label = btn.querySelector("*"); // grabs inner element safely
 

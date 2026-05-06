@@ -1,5 +1,4 @@
 @import url("https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap");
-@import './icon-animations.css';
 
 @import "tailwindcss";
 @config "../../tailwind.config.mjs";
@@ -41,7 +40,7 @@
   }
 
   .card {
-    @apply rounded-none border border-line/10 bg-surface/4 p-card backdrop-blur-card;
+    @apply rounded-none bg-surface/4 p-card backdrop-blur-card;
   }
 }
 

@@ -58,8 +58,8 @@ const cards: Card[] = [
       <div>
         <div class="grid grid-cols-1 gap-6 md:grid-cols-3 md:grid-rows-4">
           {cards.map((card) => (
-            <article class={`card ${card.desktopPlacement}`}>
-              <div class="flex flex-col gap-8 hover-border">
+            <article class={`card hover-border ${card.desktopPlacement}`}>
+              <div class="flex flex-col gap-8">
                 <img
                   src={card.iconSrc}
                   width="40"
