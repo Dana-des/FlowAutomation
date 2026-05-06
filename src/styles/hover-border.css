@@ -1,4 +1,6 @@
 .hover-border {
+  --x: 50%;
+  --y: 50%;
   position: relative;
   border-radius: inherit;
   overflow: hidden;
