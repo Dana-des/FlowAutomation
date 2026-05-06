@@ -1,13 +1,19 @@
 ---
 import Button from "./Button.astro";
+import TorusHero from "./TorusHero.astro";
 ---
 
 <section id="home"
   aria-labelledby="hero-heading"
-  class="flex min-h-screen flex-col bg-bg"
+  class="relative flex min-h-screen flex-col"
 >
+
+  <div class="fixed inset-0 z-0">
+    <TorusHero />
+  </div>
+
   <div
-    class="page-container flex flex-1 flex-col justify-center py-24 md:py-32"
+    class="relative z-10 page-container flex flex-1 flex-col justify-center py-24 md:py-32"
   >
     <div class="mx-auto flex w-full max-w-4xl flex-col items-center gap-10">
       <div class="flex flex-col items-center gap-4 text-center">

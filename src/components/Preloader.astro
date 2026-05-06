@@ -1,0 +1,122 @@
+<!--
+---
+// src/components/Preloader.astro
+---
+
+<div id="preloader" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden pointer-events-auto">
+  <!-- 
+    SHUTTERS: 
+    We apply the 'bg-bg' directly to the HTML to avoid the @apply error.
+    These two panels create the high-end vertical split.
+  -->
+  <div id="shutter-top" class="absolute top-0 left-0 w-full h-1/2 bg-bg transition-transform duration-[900ms] ease-in-out"></div>
+  <div id="shutter-bottom" class="absolute bottom-0 left-0 w-full h-1/2 bg-bg transition-transform duration-[900ms] ease-in-out"></div>
+
+  <!-- TEXT: 
+    Using your 'text-body' and 'text-text' classes. 
+  -->
+  <div id="code" class="relative z-10 text-body text-text font-sora whitespace-pre tracking-tight leading-[1.4] transition-all duration-[700ms] ease-in-out"></div>
+</div>
+
+<style>
+  /* 
+    We only keep standard CSS here to avoid Tailwind v4 isolation issues.
+  */
+  :global(.code-cursor) {
+    display: inline-block;
+    width: 1px;
+    height: 1em;
+    background-color: currentColor;
+    margin-left: 2px;
+    animation: blink 1s infinite;
+    vertical-align: bottom;
+  }
+
+  @keyframes blink {
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0; }
+  }
+
+  /* Exit states triggered via JavaScript */
+  .text-exit-anim {
+    opacity: 0 !important;
+    filter: blur(15px);
+    transform: scale(1.05) translateY(-5px);
+  }
+
+  .shutter-top-exit {
+    transform: translateY(-100%);
+  }
+
+  .shutter-bottom-exit {
+    transform: translateY(100%);
+  }
+</style>
+
+<script>
+  const initPreloader = () => {
+    const preloader = document.getElementById("preloader");
+    const container = document.getElementById("code");
+    const shutterTop = document.getElementById("shutter-top");
+    const shutterBottom = document.getElementById("shutter-bottom");
+    
+    if (!preloader || !container || !shutterTop || !shutterBottom) return;
+
+    const originalLines = ["<div>", "  <p>Loading</p>", "</div>"];
+    const lines = ["", "", ""];
+    let lineIndex = 0;
+    let charIndex = 0;
+
+    const cursor = document.createElement("span");
+    cursor.className = "code-cursor";
+
+    function render() {
+      container.innerHTML = "";
+      lines.forEach(line => {
+        const div = document.createElement("div");
+        div.textContent = line;
+        container.appendChild(div);
+      });
+      container.appendChild(cursor);
+    }
+
+    function type() {
+      if (lineIndex >= originalLines.length) {
+        setTimeout(() => {
+          // PHASE 1: Text blurs and lifts slightly
+          container.classList.add("text-exit-anim");
+          
+          // PHASE 2: Vertical Shutter Reveal
+          setTimeout(() => {
+            shutterTop.classList.add("shutter-top-exit");
+            shutterBottom.classList.add("shutter-bottom-exit");
+            preloader.style.pointerEvents = "none";
+            
+            // PHASE 3: Clean up
+            setTimeout(() => {
+              preloader.style.display = "none";
+            }, 1000); 
+          }, 400); 
+
+        }, 800);
+        return;
+      }
+
+      const fullLine = originalLines[lineIndex];
+      if (charIndex < fullLine.length) {
+        lines[lineIndex] = fullLine.slice(0, charIndex + 1);
+        charIndex++;
+        render();
+        setTimeout(type, Math.random() * 80 + 40);
+      } else {
+        charIndex = 0;
+        lineIndex++;
+        setTimeout(type, Math.random() * 200 + 300);
+      }
+    }
+
+    requestAnimationFrame(() => requestAnimationFrame(type));
+  };
+
+  initPreloader();
+</script> -->

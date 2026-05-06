@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import "../styles/hover-border.css";
+import Preloader from "../components/Preloader.astro";
 
 const {
   title = "Website",
@@ -24,6 +25,7 @@ const {
   </head>
 
   <body class="bg-bg text-text antialiased">
+    <Preloader />
     <slot />
 
     <script src="../scripts/hoverBorder.ts"></script>

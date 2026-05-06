@@ -25,7 +25,7 @@
   }
 
   body {
-    @apply bg-bg text-text font-sora antialiased;
+    @apply bg-transparent text-text font-sora antialiased;
     font-feature-settings: "ss01" on, "ss02" on, "cv01" on, "cv02" on;
   }
 }
@@ -36,7 +36,7 @@
   }
 
   .section {
-    @apply py-section-m md:py-section-d;
+    @apply bg-transparent py-section-m md:py-section-d;
   }
 
   .card {

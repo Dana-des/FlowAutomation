@@ -1,0 +1,101 @@
+---
+// This is a "wrapper" component for the 3D logic
+---
+<div id="torus-container" class="absolute inset-0 z-0 pointer-events-none opacity-0 transition-opacity duration-[2000ms]"></div>
+
+<script>
+    import * as THREE from 'three';
+    import { AsciiEffect } from 'three/examples/jsm/effects/AsciiEffect.js';
+    import { ParametricGeometry } from 'three/examples/jsm/geometries/ParametricGeometry.js';
+
+    function init() {
+        const container = document.getElementById('torus-container');
+        if (!container) return;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
+        camera.position.z = 180;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+        const effect = new AsciiEffect(renderer, ' .:-=+*#%@', { invert: false, resolution: 0.15 });
+        effect.setSize(window.innerWidth, window.innerHeight);
+        
+        // Match your high-end aesthetic
+        Object.assign(effect.domElement.style, {
+            color: '#336FE8',
+            backgroundColor: 'transparent',
+            fontFamily: 'monospace',
+            textShadow: '0px 0px 8px rgba(51, 111, 232, 0.5)'
+        });
+        
+        container.appendChild(effect.domElement);
+
+        // Your Twisted Torus Function
+        const twistedTorusFunc = (u, v, target) => {
+            const radius = 60, tube = 25, twists = 2;
+            const u_angle = u * Math.PI * 2;
+            const v_angle = v * Math.PI * 2 + (u * Math.PI * 2 * twists);
+            const x = (radius + tube * Math.cos(v_angle)) * Math.cos(u_angle);
+            const y = (radius + tube * Math.cos(v_angle)) * Math.sin(u_angle);
+            const z = tube * Math.sin(v_angle);
+            target.set(x, y, z);
+        };
+
+        const geometry = new ParametricGeometry(twistedTorusFunc, 120, 4);
+        const material = new THREE.ShaderMaterial({
+            vertexShader: `
+                varying vec3 vNormal;
+                varying vec3 vViewPosition;
+                void main() {
+                    vNormal = normalize(normalMatrix * normal);
+                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                    vViewPosition = -mvPosition.xyz;
+                    gl_Position = projectionMatrix * mvPosition;
+                }`,
+            fragmentShader: `
+                varying vec3 vNormal;
+                varying vec3 vViewPosition;
+                void main() {
+                    vec3 normal = normalize(vNormal);
+                    vec3 viewDir = normalize(vViewPosition);
+                    float rim = pow(1.0 - max(dot(viewDir, normal), 0.0), 3.0);
+                    gl_FragColor = vec4(vec3(rim * 3.5), 1.0);
+                }`
+        });
+
+        const torus = new THREE.Mesh(geometry, material);
+        torus.rotation.x = -35 * Math.PI / 180;
+        scene.add(torus);
+
+        // Mouse movement logic
+        const mouse = { x: 0, y: 0 };
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            torus.rotation.y += 0.002;
+            torus.position.x += (mouse.x * 10 - torus.position.x) * 0.05;
+            torus.position.y += (mouse.y * 10 - torus.position.y) * 0.05;
+            effect.render(scene, camera);
+        }
+
+        animate();
+        
+        // Reveal after init
+        setTimeout(() => container.classList.replace('opacity-0', 'opacity-100'), 100);
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            effect.setSize(window.innerWidth, window.innerHeight);
+        });
+    }
+
+    // Initialize
+    init();
+    // Re-init if using Astro View Transitions
+    document.addEventListener('astro:after-swap', init);
+</script>
