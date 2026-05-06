@@ -1,226 +1,97 @@
-/* ==========================================================================
-   Icon Animations  —  src/styles/icon-animations.css
-   
-   One class on the <svg> tag is all you need.
-   Internal elements are targeted with nth-child selectors.
-   
-   ICON 1  →  add  class="te-icon"   to your SVG
-   ICON 2  →  add  class="de-icon"   to your SVG
-   ICON 3  →  add  class="ed-icon"   to your SVG  (+2 small markup tweaks, see below)
-   ICON 4  →  add  class="ee-icon"   to your SVG  (+2 small markup tweaks, see below)
-   ========================================================================== */
+/* ICON 1 — Trusted Experience: 4 Rectangles shrinking to center (Tunnel) */
+@keyframes te-shrink-tunnel {
+  0%   { transform: scale(1.5); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: scale(0);   opacity: 0; }
+}
+
+.te-icon g rect {
+  /* Using fixed center to ensure they collapse to the exact same point */
+  transform-origin: 20px 20px; 
+  will-change: transform, opacity;
+  animation: te-shrink-tunnel 5s linear infinite;
+}
+
+.te-icon g rect:nth-child(1) { animation-delay: 0s; }
+.te-icon g rect:nth-child(2) { animation-delay: -1.25s; }
+.te-icon g rect:nth-child(3) { animation-delay: -2.5s; }
+.te-icon g rect:nth-child(4) { animation-delay: -3.75s; }
 
 
-/* --------------------------------------------------------------------------
-   ICON 1 — Trusted Experience
-   Just add class="te-icon" to the <svg>. Nothing else changes.
+/* ICON 2 — Direct Engineering: Constant drift to bottom center */
+@keyframes de-drift-linear {
+  0%   { transform: translate(0, 0); opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)); opacity: 0; }
+}
 
-   Selector map (elements live inside a <g>):
-     rect:nth-child(1)  =  inner  12×12  (x=14 y=14)
-     rect:nth-child(2)  =  middle 30×30  (x=5  y=5)
-     rect:nth-child(3)  =  outer  48×48  (x=-4 y=-4)
-   -------------------------------------------------------------------------- */
+.de-icon g rect {
+  will-change: transform, opacity;
+  animation: de-drift-linear 5s linear infinite;
+}
 
-   @keyframes te-shrink-inward {
-    0%   { transform: scale(1);    opacity: 1; }
-    32%  { transform: scale(0.06); opacity: 0; }
-    33%  { transform: scale(3.5);  opacity: 0; }
-    64%  { transform: scale(1.04); opacity: 0; }
-    74%  { transform: scale(1);    opacity: 1; }
-    100% { transform: scale(1);    opacity: 1; }
+.de-icon g rect:nth-child(1) { --tx: -6px;  --ty: 28px; animation-delay: 0s; }
+.de-icon g rect:nth-child(2) { --tx: 12px;  --ty: 25px; animation-delay: -1.25s; }
+.de-icon g rect:nth-child(3) { --tx: 18px;  --ty: 36px; animation-delay: -2.5s; }
+.de-icon g rect:nth-child(4) { --tx: -18px; --ty: 36px; animation-delay: -3.75s; }
+
+
+/* ICON 3 — Efficient Deployment: 3 Circles expanding outward */
+@keyframes ed-expand-out {
+  0%   { transform: scale(0);   opacity: 0; }
+  15%  { transform: scale(0.2); opacity: 1; }
+  85%  { transform: scale(1.7); opacity: 1; }
+  100% { transform: scale(2);   opacity: 0; }
+}
+
+.ed-icon circle {
+  transform-box: fill-box;
+  transform-origin: center;
+  will-change: transform, opacity;
+  animation: ed-expand-out 5s linear infinite;
+}
+
+.ed-icon circle:nth-child(1) { animation-delay: 0s; }
+.ed-icon circle:nth-child(2) { animation-delay: -1.66s; }
+.ed-icon circle:nth-child(3) { animation-delay: -3.33s; }
+
+
+/* ICON 4 — European Excellence: Slow rotation with no clipping */
+@keyframes ee-spin-cw {
+  from { transform: rotate(-45deg); }
+  to   { transform: rotate(315deg); }
+}
+
+@keyframes ee-spin-ccw {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+.ee-icon, 
+.ee-icon g {
+  overflow: visible !important;
+}
+
+.ee-icon rect:nth-child(1) {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ee-spin-ccw 15s linear infinite;
+}
+
+.ee-icon rect:nth-child(2) {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ee-spin-cw 12s linear infinite;
+}
+
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .te-icon g rect, .de-icon g rect, .ed-icon circle, .ee-icon rect {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
-  
-  .te-icon g rect:nth-child(1),
-  .te-icon g rect:nth-child(2),
-  .te-icon g rect:nth-child(3) {
-    transform-box:    fill-box;
-    transform-origin: center;
-    will-change:      transform, opacity;
-    animation: te-shrink-inward 4.5s cubic-bezier(0.86, 0, 0.07, 1) infinite;
-  }
-  
-  .te-icon g rect:nth-child(1) { animation-delay:  0s;   }
-  .te-icon g rect:nth-child(2) { animation-delay: -1.5s; }
-  .te-icon g rect:nth-child(3) { animation-delay: -3s;   }
-  
-  
-  /* --------------------------------------------------------------------------
-     ICON 2 — Direct Engineering
-     Just add class="de-icon" to the <svg>. Nothing else changes.
-  
-     Selector map (elements live inside a <g>, in this order):
-       rect:nth-child(1)  =  dot at x=24 y=10  →  mid-right  (centre 26,12)
-       rect:nth-child(2)  =  dot at x=6  y=13  →  mid-left   (centre 8,15)
-       rect:nth-child(3)  =  dot at x=0  y=0   →  top-left   (centre 2,2)
-       rect:nth-child(4)  =  dot at x=36 y=0   →  top-right  (centre 38,2)
-       (path is 5th child — the baseline — left untouched)
-     -------------------------------------------------------------------------- */
-  
-  /* mid-right  (26,12) → centre (20,39): −6px +27px  |  spawn at +20,0  */
-  @keyframes de-fly-mr {
-    0%   { transform: translate(0,     0);   opacity: 1; }
-    30%  { transform: translate(0,     0);   opacity: 1; }
-    46%  { transform: translate(-6px, 27px); opacity: 0.2; }
-    48%  { transform: translate(-6px, 27px); opacity: 0; }
-    49%  { transform: translate(20px,  0);   opacity: 0; }
-    70%  { transform: translate(20px,  0);   opacity: 0; }
-    86%  { transform: translate(0,     0);   opacity: 1; }
-    100% { transform: translate(0,     0);   opacity: 1; }
-  }
-  
-  /* mid-left   (8,15)  → centre (20,39): +12px +24px  |  spawn at −14,0 */
-  @keyframes de-fly-ml {
-    0%   { transform: translate(0,      0);  opacity: 1; }
-    30%  { transform: translate(0,      0);  opacity: 1; }
-    46%  { transform: translate(12px, 24px); opacity: 0.2; }
-    48%  { transform: translate(12px, 24px); opacity: 0; }
-    49%  { transform: translate(-14px,  0);  opacity: 0; }
-    70%  { transform: translate(-14px,  0);  opacity: 0; }
-    86%  { transform: translate(0,      0);  opacity: 1; }
-    100% { transform: translate(0,      0);  opacity: 1; }
-  }
-  
-  /* top-left   (2,2)   → centre (20,39): +18px +37px  |  spawn at −8,−8 */
-  @keyframes de-fly-tl {
-    0%   { transform: translate(0,     0);    opacity: 1; }
-    30%  { transform: translate(0,     0);    opacity: 1; }
-    46%  { transform: translate(18px, 37px);  opacity: 0.2; }
-    48%  { transform: translate(18px, 37px);  opacity: 0; }
-    49%  { transform: translate(-8px, -8px);  opacity: 0; }
-    70%  { transform: translate(-8px, -8px);  opacity: 0; }
-    86%  { transform: translate(0,     0);    opacity: 1; }
-    100% { transform: translate(0,     0);    opacity: 1; }
-  }
-  
-  /* top-right  (38,2)  → centre (20,39): −18px +37px  |  spawn at +8,−8 */
-  @keyframes de-fly-tr {
-    0%   { transform: translate(0,      0);   opacity: 1; }
-    30%  { transform: translate(0,      0);   opacity: 1; }
-    46%  { transform: translate(-18px, 37px); opacity: 0.2; }
-    48%  { transform: translate(-18px, 37px); opacity: 0; }
-    49%  { transform: translate(8px,  -8px);  opacity: 0; }
-    70%  { transform: translate(8px,  -8px);  opacity: 0; }
-    86%  { transform: translate(0,      0);   opacity: 1; }
-    100% { transform: translate(0,      0);   opacity: 1; }
-  }
-  
-  .de-icon g rect:nth-child(1),
-  .de-icon g rect:nth-child(2),
-  .de-icon g rect:nth-child(3),
-  .de-icon g rect:nth-child(4) {
-    transform-box:             fill-box;
-    transform-origin:          center;
-    will-change:               transform, opacity;
-    animation-duration:        4.8s;
-    animation-timing-function: cubic-bezier(0.86, 0, 0.07, 1);
-    animation-iteration-count: infinite;
-  }
-  
-  .de-icon g rect:nth-child(1) { animation-name: de-fly-mr; animation-delay:  0s;   }
-  .de-icon g rect:nth-child(2) { animation-name: de-fly-ml; animation-delay: -1.2s; }
-  .de-icon g rect:nth-child(3) { animation-name: de-fly-tl; animation-delay: -2.4s; }
-  .de-icon g rect:nth-child(4) { animation-name: de-fly-tr; animation-delay: -3.6s; }
-  
-  
-  /* --------------------------------------------------------------------------
-     ICON 3 — Efficient Deployment
-     Add class="ed-icon" to the <svg>.
-  
-     ⚠ TWO SMALL MARKUP CHANGES NEEDED in your SVG:
-       1. Change the inner circle's r from "8.5" to "17.5"
-       2. Add a third identical circle directly below the existing two
-     
-     Result:
-       <circle cx="20" cy="20" r="17.5" stroke="#336FE8"/>
-       <circle cx="20" cy="20" r="17.5" stroke="#336FE8"/>   ← was r="8.5"
-       <circle cx="20" cy="20" r="17.5" stroke="#336FE8"/>   ← add this line
-  
-     Why: CSS scale handles apparent size differences — all three circles
-     use the same radius, and transform scale creates the visual of inner
-     and outer rings. Without matching radii the loop has a visible size jump.
-     -------------------------------------------------------------------------- */
-  
-  @keyframes ed-expand-outward {
-    0%   { transform: scale(0);    opacity: 0; }
-    10%  { transform: scale(0);    opacity: 0; }
-    16%  { transform: scale(0.49); opacity: 1; }
-    62%  { transform: scale(1);    opacity: 1; }
-    82%  { transform: scale(1.55); opacity: 0; }
-    100% { transform: scale(1.55); opacity: 0; }
-  }
-  
-  .ed-icon circle:nth-child(1),
-  .ed-icon circle:nth-child(2),
-  .ed-icon circle:nth-child(3) {
-    transform-box:    fill-box;
-    transform-origin: center;
-    will-change:      transform, opacity;
-    animation: ed-expand-outward 3.9s cubic-bezier(0.86, 0, 0.07, 1) infinite;
-  }
-  
-  .ed-icon circle:nth-child(1) { animation-delay:  0s;   }
-  .ed-icon circle:nth-child(2) { animation-delay: -1.3s; }
-  .ed-icon circle:nth-child(3) { animation-delay: -2.6s; }
-  
-  
-  /* --------------------------------------------------------------------------
-     ICON 4 — European Excellence
-     Add class="ee-icon" to the <svg>.
-  
-     ⚠ TWO SMALL MARKUP CHANGES NEEDED on the diamond <rect>:
-       1. Change  x="7.27246" y="20"  →  x="11" y="11"
-       2. Remove the entire  transform="rotate(-45 7.27246 20)"  attribute
-  
-     Why: CSS transform and SVG transform attributes conflict. Repositioning
-     the rect so its centre is naturally at (20,20) lets CSS handle
-     the −45° starting rotation and the ongoing clockwise spin cleanly.
-  
-     The outer square and the centre pip need no changes.
-     -------------------------------------------------------------------------- */
-  
-  @keyframes ee-rotate-ccw {
-    from { transform: rotate(0deg);    }
-    to   { transform: rotate(-360deg); }
-  }
-  
-  @keyframes ee-rotate-cw-diamond {
-    from { transform: rotate(-45deg); }
-    to   { transform: rotate(315deg); }
-  }
-  
-  /* rect:nth-child(1) = outer square */
-  .ee-icon rect:nth-child(1) {
-    transform-box:    fill-box;
-    transform-origin: center;
-    will-change:      transform;
-    animation: ee-rotate-ccw 10s linear infinite;
-  }
-  
-  /* rect:nth-child(2) = inner diamond */
-  .ee-icon rect:nth-child(2) {
-    transform-box:    fill-box;
-    transform-origin: center;
-    will-change:      transform;
-    animation: ee-rotate-cw-diamond 7s linear infinite;
-  }
-  
-  /* rect:nth-child(3) = centre pip — intentionally not animated */
-  
-  
-  /* --------------------------------------------------------------------------
-     Accessibility
-     -------------------------------------------------------------------------- */
-  
-  @media (prefers-reduced-motion: reduce) {
-    .te-icon g rect,
-    .de-icon g rect,
-    .ed-icon circle,
-    .ee-icon rect:nth-child(1),
-    .ee-icon rect:nth-child(2) {
-      animation: none;
-    }
-  
-    .ee-icon rect:nth-child(2) {
-      transform: rotate(-45deg);
-    }
-  }
+}
