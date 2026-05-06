@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import "../styles/hover-border.css";
 
 const {
   title = "Website",
@@ -24,5 +25,6 @@ const {
 
   <body class="bg-background text-text antialiased">
     <slot />
+    <script type="module" src="/src/scripts/hoverBorder.ts"></script>
   </body>
 </html>

@@ -1,0 +1,32 @@
+
+  
+  /* THIS is the animated border layer */
+  .hover-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px; /* border thickness */
+    pointer-events: none;
+  
+    background: radial-gradient(
+      120px circle at var(--x, 50%) var(--y, 50%),
+      rgb(var(--c-ui) / 0.8),
+      transparent 100%
+    );
+  
+    /* 🔥 THIS is the important part — mask everything except border */
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  /* show only on hover */
+  .hover-border:hover::before {
+    opacity: 1;
+  }
