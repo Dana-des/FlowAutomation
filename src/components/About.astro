@@ -55,7 +55,7 @@ const cards: Card[] = [
 ];
 ---
 
-<section id="why-us" class="relative z-10 bg-bg text-text scroll-mt-[-40vh]" data-about-section>
+<section id="why-us" class="relative z-10 bg-bg text-text" data-about-section>
   <div class="page-container section">
     <div class="flex flex-col gap-12">
       <div class="md:sticky md:top-0 md:flex md:min-h-screen md:items-center">
@@ -72,7 +72,7 @@ const cards: Card[] = [
       </div>
 
       <div>
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-3 md:grid-rows-4">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-3 md:grid-rows-4 mb-[100vh]">
           {cards.map((card) => (
             <article class={`card hover-border ${card.desktopPlacement}`}>
               <div class="flex flex-col gap-8">

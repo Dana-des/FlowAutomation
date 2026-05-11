@@ -1,5 +1,11 @@
 ---
+// src/sections/Services.astro
 import Text from "../components/Button.astro";
+import ServiceOne from '../components/ascii/ServiceOne.astro';
+// Uncomment as you create each:
+// import ServiceTwo   from '../components/ascii/ServiceTwo.astro';
+// import ServiceThree from '../components/ascii/ServiceThree.astro';
+// import ServiceFour  from '../components/ascii/ServiceFour.astro';
 
 const services = [
   {
@@ -12,18 +18,18 @@ const services = [
       {
         title: "Workflow Automation",
         description: "We replace manual processes with structured workflows that run reliably and scale with your operations.",
-        outcomes: ["Process mapping & bottleneck analysis", "Conditional logic & triggers", "Error-safe workflows"]
+        outcomes: ["Process mapping & bottleneck analysis", "Conditional logic & triggers", "Error-safe workflows"],
       },
       {
         title: "System Integration",
         description: "We connect your tools into a unified system with seamless data flow across platforms.",
-        outcomes: ["API integrations & middleware", "Real-time, bi-directional sync", "Cross-system workflow orchestration"]
+        outcomes: ["API integrations & middleware", "Real-time, bi-directional sync", "Cross-system workflow orchestration"],
       },
       {
         title: "FinOps",
         description: "We bring visibility and control to your infrastructure costs without sacrificing performance.",
-        outcomes: ["Cost analysis & optimization", "Resource usage monitoring", "Scalable infrastructure planning"]
-      }
+        outcomes: ["Cost analysis & optimization", "Resource usage monitoring", "Scalable infrastructure planning"],
+      },
     ],
   },
   {
@@ -36,27 +42,27 @@ const services = [
       {
         title: "Automated Conversations",
         description: "We turn repetitive communication into structured systems that respond, act, and trigger workflows automatically.",
-        outcomes: ["Telegram, Slack, WhatsApp bots", "Conversation logic & command flows", "System-triggered actions & responses"]
-      }
+        outcomes: ["Telegram, Slack, WhatsApp bots", "Conversation logic & command flows", "System-triggered actions & responses"],
+      },
     ],
   },
   {
     id: " 03 ",
     title: "Product & Engineering",
-    heading: "Current tools don’t fit?",
+    heading: "Current tools don't fit?",
     description:
       "Stop adapting to rigid software. Build systems that adapt to your workflow.",
     cards: [
       {
         title: "Custom Software",
         description: "We design and build internal tools and systems tailored to your exact business processes.",
-        outcomes: ["Business logic architecture", "Scalable backend systems", "Admin panels & internal tools"]
+        outcomes: ["Business logic architecture", "Scalable backend systems", "Admin panels & internal tools"],
       },
       {
         title: "Web Development",
         description: "We create high-performance websites and platforms aligned with your product and business goals.",
-        outcomes: ["Frontend & backend development", "Performance and scalability optimization", "CMS or custom-built solutions"]
-      }
+        outcomes: ["Frontend & backend development", "Performance and scalability optimization", "CMS or custom-built solutions"],
+      },
     ],
   },
   {
@@ -69,108 +75,154 @@ const services = [
       {
         title: "Security Assessment (Pentest)",
         description: "We identify and eliminate critical vulnerabilities before they can be exploited in real-world scenarios.",
-        outcomes: ["Application & infrastructure testing", "Business logic and access control analysis", "Clear remediation plan & re-testing"]
-      }
+        outcomes: ["Application & infrastructure testing", "Business logic and access control analysis", "Clear remediation plan & re-testing"],
+      },
     ],
   },
 ];
 ---
 
-<section id="services" class="bg-bg text-text">
-  <div class="container max-w-content py-section-m md:py-section-d">
+<!--
+  z-10 + bg-bg: this section sits above the fixed hero animation underneath.
+  The solid background covers the hero; the ASCII animations render on top of
+  that background, visible only where the 3D shape has bright rim pixels.
+-->
+<section id="services" class="relative z-10 bg-bg text-text">
 
-    <!-- Heading -->
-    <h2 class="text-h2 text-center mb-20 lg:text-h2-lg">Systems we build</h2>
+  <!-- Heading -->
+  <div class="container max-w-content pt-section-m md:pt-section-d">
+    <h2 class="text-h2 text-center mb-40 lg:text-h2-lg">Systems we build</h2>
+  </div>
 
-    <div class="flex flex-col gap-[160px]">
-      {services.map((service) => (
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <!-- ─── Service groups ──────────────────────────────────────────────────── -->
+  <!--
+    Each service group is an independent scroll unit:
+      1. A full-bleed ASCII background that sticks to the viewport while
+         the user scrolls through that group's cards (desktop only).
+      2. A two-column content grid that overlaps the ASCII via -mt-[100vh]
+         (desktop only; on mobile it just flows normally below the heading).
+         - LEFT column: sticky — stays centred while right side scrolls.
+         - RIGHT column: md:my-[100vh] creates the scroll space that keeps
+           the left sticky for the full height of the card list.
 
-          <!-- LEFT -->
-          <div class="md:sticky md:top-0 md:h-screen flex md:items-center">
-            <div class="flex flex-col gap-4 max-w-[520px]">
-              <h6 class="text-h6 text-ui uppercase">
-                [{service.id}] {service.title}
-              </h6>
-              <h3 class="text-h3 lg:text-h3-lg">{service.heading}</h3>
-              <p class="text-body text-text/80">
-                {service.description}
-              </p>
-            </div>
-          </div>
+    When all cards in a group are scrolled past, the sticky ASCII un-sticks
+    naturally and the next group's ASCII takes over. No JS needed for this —
+    it's pure CSS sticky behaviour.
+  -->
+  <div class="flex flex-col gap-20 pb-section-m md:pb-section-d">
 
-          <!-- RIGHT -->
-          <div class="flex flex-col gap-6 md:my-[100vh]">
-            {service.cards.map((card) => (
+    {services.map((service, i) => (
+      <div class="relative">
 
-              <!-- Removed 'gap-6' here to fix the spacing issue -->
-              <article class="hover-border bg-surface/4 backdrop-blur-card p-card flex flex-col">
-
-                <!-- Content (Added mb-6 here) -->
-                <div class="flex flex-col gap-4 mb-6">
-                  <div class="flex items-center gap-2.5">
-                    <div class="w-[10px] h-[10px] rounded-full bg-ui"></div>
-                    <h5 class="text-body">{card.title}</h5>
-                  </div>
-                  <p class="text-body text-text/80">
-                    {card.description}
-                  </p>
-                </div>
-
-                <!-- Divider (Added mb-6 here) -->
-                <div class="h-px bg-line/10 mb-6"></div>
-
-                <!-- Button -->
-                <div class="outcomes-btn inline-block cursor-pointer">
-                  <Text variant="text">OUTCOMES +</Text>
-                </div>
-
-                <!-- Expand (Added pt-4 inside so space only appears when open) -->
-                <div class="outcomes-content overflow-hidden max-h-0 opacity-0 transition-all duration-500 ease-in-out">
-                  <div class="pt-4 flex flex-col gap-1 text-text/80">
-                    {card.outcomes.map((outcome) => (
-                      <p>→ {outcome}</p>
-                    ))}
-                  </div>
-                </div>
-
-              </article>
-
-            ))}
-          </div>
-
+        <!--
+          ASCII background layer — desktop only (hidden on mobile for perf).
+          sticky top-0 h-screen: always viewport-sized so Three.js renders
+          at a consistent resolution regardless of how tall the content is.
+          pointer-events-none: clicks pass through to the content above.
+          z-0: sits behind the content grid (z-10).
+        -->
+        <div class="hidden md:block sticky top-0 h-screen overflow-hidden pointer-events-none z-0">
+          {i === 0 && <ServiceOne />}
+          {/* Uncomment as you add more ASCII components: */}
+          {/* {i === 1 && <ServiceTwo />}   */}
+          {/* {i === 2 && <ServiceThree />} */}
+          {/* {i === 3 && <ServiceFour />}  */}
         </div>
-      ))}
-    </div>
+
+        <!--
+          Content grid.
+          md:-mt-[100vh]: on desktop, pulls the grid up to visually overlap
+          the ASCII sticky div above. On mobile no offset — normal flow.
+          relative z-10: sits in front of the ASCII layer.
+        -->
+        <div class="container max-w-content relative z-10 md:-mt-[100vh]">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- LEFT: service info ─────────────────────────────────────── -->
+            <!--
+              md:sticky md:top-0 md:h-screen md:items-center:
+              pins this column to the viewport and centres its content
+              vertically while the right column's cards scroll past.
+            -->
+            <div class="md:sticky md:top-0 md:h-screen flex md:items-center">
+              <div class="flex flex-col gap-4 max-w-[520px]">
+                <h6 class="text-h6 text-ui uppercase">
+                  [{service.id}] {service.title}
+                </h6>
+                <h3 class="text-h3 lg:text-h3-lg">{service.heading}</h3>
+                <p class="text-body text-text/80">{service.description}</p>
+              </div>
+            </div>
+
+            <!-- RIGHT: cards ───────────────────────────────────────────── -->
+            <!--
+              md:my-[100vh]: adds 100vh top and bottom margin on desktop.
+              This is what gives the left sticky column enough scroll runway
+              to stay pinned through the entire card list. On mobile: no margin,
+              cards just follow the left info block naturally.
+            -->
+            <div class="flex flex-col gap-6 md:my-[100vh]">
+
+              {service.cards.map((card) => (
+                <article class="hover-border bg-surface/4 backdrop-blur-card p-card flex flex-col">
+
+                  <div class="flex flex-col gap-4 mb-6">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-[10px] h-[10px] rounded-full bg-ui"></div>
+                      <h5 class="text-body">{card.title}</h5>
+                    </div>
+                    <p class="text-body text-text/80">{card.description}</p>
+                  </div>
+
+                  <div class="h-px bg-line/10 mb-6"></div>
+
+                  <div class="outcomes-btn inline-block cursor-pointer">
+                    <Text variant="text">OUTCOMES +</Text>
+                  </div>
+
+                  <div class="outcomes-content overflow-hidden max-h-0 opacity-0 transition-all duration-500 ease-in-out">
+                    <div class="pt-4 flex flex-col gap-1 text-text/80">
+                      {card.outcomes.map((outcome) => (
+                        <p>→ {outcome}</p>
+                      ))}
+                    </div>
+                  </div>
+
+                </article>
+              ))}
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    ))}
 
   </div>
+
 </section>
 
+
 <script>
-  const buttons = document.querySelectorAll(".outcomes-btn");
-
-  buttons.forEach((btn) => {
-    // 1. Add 'e' (the event object) as a parameter
-    btn.addEventListener("click", (e) => {
-      
-      // 2. Stop the browser from jumping to the top of the page
-      e.preventDefault(); 
-
-      const content = btn.nextElementSibling;
-      const label = btn.querySelector("*"); // grabs inner element safely
-
-      const isOpen = content.classList.contains("open");
+  // Outcomes expand / collapse — unchanged from original
+  document.querySelectorAll('.outcomes-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const content = btn.nextElementSibling as HTMLElement;
+      const label   = btn.querySelector('*')  as HTMLElement;
+      const isOpen  = content.classList.contains('open');
 
       if (isOpen) {
-        content.style.maxHeight = "0px";
-        content.style.opacity = "0";
-        content.classList.remove("open");
-        label.textContent = "OUTCOMES +";
+        content.style.maxHeight = '0px';
+        content.style.opacity   = '0';
+        content.classList.remove('open');
+        label.textContent = 'OUTCOMES +';
       } else {
-        content.classList.add("open");
-        content.style.maxHeight = content.scrollHeight + "px";
-        content.style.opacity = "1";
-        label.textContent = "OUTCOMES −";
+        content.classList.add('open');
+        content.style.maxHeight = content.scrollHeight + 'px';
+        content.style.opacity   = '1';
+        label.textContent       = 'OUTCOMES −';
       }
     });
   });

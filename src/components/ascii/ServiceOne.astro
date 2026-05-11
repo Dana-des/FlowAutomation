@@ -1,12 +1,11 @@
 ---
-// src/components/services/ServiceFlow.astro
+// src/components/ascii/ServiceOne.astro
 // Service 1 — Torus Knot / Continuous Flow
 ---
 
 <div
   id="flow-container"
-  class="w-full overflow-hidden relative"
-  style="height: 90vh;"
+  class="w-full h-full"
   aria-hidden="true"
 ></div>
 
@@ -14,73 +13,65 @@
   import * as THREE from 'three';
   import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
 
-  // ─── State ────────────────────────────────────────────────────────────────────
   let scene: THREE.Scene;
   let camera: THREE.PerspectiveCamera;
   let renderer: THREE.WebGLRenderer;
   let effect: AsciiEffect;
   let flowObject: THREE.Mesh;
   let animFrameId: number | null = null;
-
-  // Visibility flags — BOTH must be true to render
   let isInViewport = false;
-  let isTabVisible  = !document.hidden;
+  let isTabVisible = !document.hidden;
 
   const container = document.getElementById('flow-container') as HTMLElement;
   const mouse = { x: 0, y: 0 };
 
-  // ─── Loop control ─────────────────────────────────────────────────────────────
   function startLoop() {
     if (animFrameId !== null) return;
     animFrameId = requestAnimationFrame(animate);
   }
-
   function stopLoop() {
     if (animFrameId === null) return;
     cancelAnimationFrame(animFrameId);
     animFrameId = null;
   }
-
   function syncLoop() {
-    if (isInViewport && isTabVisible) {
-      startLoop();
-    } else {
-      stopLoop();
-    }
+    isInViewport && isTabVisible ? startLoop() : stopLoop();
   }
 
-  // ─── Init ─────────────────────────────────────────────────────────────────────
   function init() {
     scene = new THREE.Scene();
+    // Must be null (not black) so the renderer outputs transparent pixels
+    // where there is no geometry. invert: false below means characters only
+    // appear on the bright rim of the shape — everywhere else is transparent.
     scene.background = null;
 
-    // Aspect ratio relative to the container, not the window
     camera = new THREE.PerspectiveCamera(
       50,
       container.clientWidth / container.clientHeight,
       1,
       1000
     );
-    camera.position.z = 400; // preserved
+    camera.position.z = 400;
 
-    renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+    renderer = new THREE.WebGLRenderer({ antialias: false });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
     renderer.setClearColor(0x000000, 0);
 
-    // invert: true — preserved (different from TwistedTorus)
+    // invert: false — characters appear only on the bright rim of the shape.
+    // invert: true fills the entire background with characters (wrong for
+    // transparent overlays). The visual result is the same rim-glow look.
     effect = new AsciiEffect(renderer, ' .:-=+*#%@', {
-      invert: true,
+      invert: false,
       resolution: 0.15,
     });
     effect.setSize(container.clientWidth, container.clientHeight);
 
-    // Blue glow — preserved exactly
     Object.assign(effect.domElement.style, {
       color: '#336FE8',
       backgroundColor: 'transparent',
       fontFamily: 'monospace',
       fontSize: '18px',
-      fontWeight: '500',
+      fontWeight: '400',
       textShadow: `
         0px 0px 4px rgba(51, 111, 232, 0.8),
         0px 0px 12px rgba(51, 111, 232, 0.8),
@@ -90,10 +81,10 @@
 
     container.appendChild(effect.domElement);
 
-    // ─── Geometry: Torus Knot — preserved exactly ────────────────────────────
+    // Geometry: Torus Knot — all values preserved
     const geometry = new THREE.TorusKnotGeometry(80, 25, 128, 32);
 
-    // ─── Shader: Rim lighting — preserved exactly ────────────────────────────
+    // Shader: Rim lighting — preserved exactly
     const material = new THREE.ShaderMaterial({
       vertexShader: /* glsl */ `
         varying vec3 vNormal;
@@ -120,44 +111,29 @@
     flowObject = new THREE.Mesh(geometry, material);
     scene.add(flowObject);
 
-    // ─── Observers ──────────────────────────────────────────────────────────────
     const intersectionObserver = new IntersectionObserver(
-      ([entry]) => {
-        isInViewport = entry.isIntersecting;
-        syncLoop();
-      },
+      ([entry]) => { isInViewport = entry.isIntersecting; syncLoop(); },
       { threshold: 0 }
     );
     intersectionObserver.observe(container);
 
-    const onVisibilityChange = () => {
-      isTabVisible = !document.hidden;
-      syncLoop();
-    };
+    const onVisibilityChange = () => { isTabVisible = !document.hidden; syncLoop(); };
     document.addEventListener('visibilitychange', onVisibilityChange);
 
     window.addEventListener('resize', onResize);
-
-    // Mouse tracked relative to container rect — preserved
     window.addEventListener('mousemove', onMouseMove);
 
-    // ─── Cleanup ────────────────────────────────────────────────────────────────
-    document.addEventListener(
-      'astro:before-swap',
-      () => {
-        stopLoop();
-        intersectionObserver.disconnect();
-        document.removeEventListener('visibilitychange', onVisibilityChange);
-        window.removeEventListener('resize', onResize);
-        window.removeEventListener('mousemove', onMouseMove);
-        renderer.dispose();
-        effect.domElement.remove();
-      },
-      { once: true }
-    );
+    document.addEventListener('astro:before-swap', () => {
+      stopLoop();
+      intersectionObserver.disconnect();
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('mousemove', onMouseMove);
+      renderer.dispose();
+      effect.domElement.remove();
+    }, { once: true });
   }
 
-  // ─── Handlers ─────────────────────────────────────────────────────────────────
   function onResize() {
     camera.aspect = container.clientWidth / container.clientHeight;
     camera.updateProjectionMatrix();
@@ -165,31 +141,21 @@
   }
 
   function onMouseMove(e: MouseEvent) {
-    // Container-relative tracking — preserved from original
     const rect = container.getBoundingClientRect();
     mouse.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
     mouse.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
   }
 
-  // ─── Animation loop ───────────────────────────────────────────────────────────
   function animate() {
     animFrameId = requestAnimationFrame(animate);
-
-    // Continuous structural rotation — preserved
-    flowObject.rotation.y += 0.003;
-    flowObject.rotation.x += 0.002;
-
-    // Mouse parallax on rotation — preserved
+    flowObject.rotation.y += 0.001;
+    flowObject.rotation.x += 0.001;
     flowObject.rotation.x += (mouse.y * 0.3 - flowObject.rotation.x) * 0.05;
     flowObject.rotation.z += (mouse.x * 0.3 - flowObject.rotation.z) * 0.05;
-
-    // Subtle position drift toward cursor — preserved
     flowObject.position.x += (mouse.x * 20 - flowObject.position.x) * 0.05;
     flowObject.position.y += (mouse.y * 20 - flowObject.position.y) * 0.05;
-
     effect.render(scene, camera);
   }
 
-  // ─── Boot — IntersectionObserver decides when to start ───────────────────────
   init();
 </script>
