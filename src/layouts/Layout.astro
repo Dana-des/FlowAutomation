@@ -2,6 +2,8 @@
 import "../styles/global.css";
 import "../styles/hover-border.css";
 import Preloader from "../components/Preloader.astro";
+import TwistedTorus from '../components/ascii/TwistedTorus.astro';
+import CustomCursor from "../components/CustomCursor.astro";
 
 const {
   title = "Website",
@@ -26,6 +28,7 @@ const {
 
   <body class="bg-bg text-text antialiased">
     <Preloader />
+    <TwistedTorus />
     <slot />
 
     <script src="../scripts/hoverBorder.ts"></script>
