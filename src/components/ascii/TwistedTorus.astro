@@ -1,6 +1,5 @@
 ---
 // src/components/TwistedTorus.astro
-// No props needed — all values are preserved from the original
 ---
 
 <div
@@ -14,27 +13,52 @@
   import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
   import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js';
 
-  // ─── State ───────────────────────────────────────────────────────────────────
+  // ─── State ────────────────────────────────────────────────────────────────────
   let scene: THREE.Scene;
   let camera: THREE.PerspectiveCamera;
   let renderer: THREE.WebGLRenderer;
   let effect: AsciiEffect;
   let torus: THREE.Mesh;
-  let animFrameId: number;
-  let canAnimate = false;
+  let animFrameId: number | null = null;
   let fadeTimer: ReturnType<typeof setTimeout>;
+  let canAnimate = false;
+
+  // Visibility flags — BOTH must be true for the loop to run
+  let isInViewport = false;
+  let isTabVisible  = !document.hidden;
 
   const container = document.getElementById('torus-container') as HTMLElement;
-  const mouse = { x: 0, y: 0 };
+  const mouse     = { x: 0, y: 0 };
   const BASE_TILT_X = -35 * (Math.PI / 180);
+
+  // ─── Loop control ─────────────────────────────────────────────────────────────
+  /** Start the rAF loop only if not already running */
+  function startLoop() {
+    if (animFrameId !== null) return; // already running
+    animFrameId = requestAnimationFrame(animate);
+  }
+
+  /** Cancel the rAF loop and free the frame slot completely */
+  function stopLoop() {
+    if (animFrameId === null) return; // already stopped
+    cancelAnimationFrame(animFrameId);
+    animFrameId = null;
+  }
+
+  /** Called whenever visibility state changes */
+  function syncLoop() {
+    if (isInViewport && isTabVisible) {
+      startLoop();
+    } else {
+      stopLoop();
+    }
+  }
 
   // ─── Init ─────────────────────────────────────────────────────────────────────
   function init() {
-    // Scene
     scene = new THREE.Scene();
     scene.background = null;
 
-    // Camera
     camera = new THREE.PerspectiveCamera(
       50,
       window.innerWidth / window.innerHeight,
@@ -43,19 +67,17 @@
     );
     camera.position.z = 250;
 
-    // Renderer — pixel ratio capped at 1 for perf (5 animations on page)
+    // Pixel ratio capped at 1 — important when 5 animations are on the page
     renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
     renderer.setClearColor(0x000000, 0);
 
-    // ASCII Effect
     effect = new AsciiEffect(renderer, ' .:-=+*#%@', {
       invert: false,
       resolution: 0.15,
     });
     effect.setSize(window.innerWidth, window.innerHeight);
 
-    // Styles — preserved exactly from original
     Object.assign(effect.domElement.style, {
       color: '#336FE8',
       backgroundColor: 'transparent',
@@ -63,7 +85,7 @@
       fontSize: '18px',
       fontWeight: '500',
       textShadow: `
-        0px 0px 4px rgba(51, 111, 232, 0.6),
+        0px 0px 4px rgba(51, 111, 232, 0.8),
         0px 0px 12px rgba(51, 111, 232, 0.8),
         0px 0px 24px rgba(51, 111, 232, 0.8)
       `,
@@ -71,19 +93,13 @@
 
     container.appendChild(effect.domElement);
 
-    // ─── Geometry: Twisted Torus (ParametricGeometry) ───────────────────────
-    const twistedTorusFunc = (
-      u: number,
-      v: number,
-      target: THREE.Vector3
-    ) => {
-      const radius = 60;  // main ring radius — preserved
-      const tube   = 25;  // tube thickness — preserved
-      const twists = 2;   // tube rotations — preserved
-
+    // ─── Geometry ───────────────────────────────────────────────────────────────
+    const twistedTorusFunc = (u: number, v: number, target: THREE.Vector3) => {
+      const radius = 60;
+      const tube   = 25;
+      const twists = 2;
       const uAngle = u * Math.PI * 2;
       const vAngle = v * Math.PI * 2 + uAngle * twists;
-
       target.set(
         (radius + tube * Math.cos(vAngle)) * Math.cos(uAngle),
         (radius + tube * Math.cos(vAngle)) * Math.sin(uAngle),
@@ -91,10 +107,9 @@
       );
     };
 
-    // 120 tubular × 4 radial = sharp square-twist look — preserved
     const geometry = new ParametricGeometry(twistedTorusFunc, 120, 4);
 
-    // ─── Shader: Rim / Glow ──────────────────────────────────────────────────
+    // ─── Shader ─────────────────────────────────────────────────────────────────
     const material = new THREE.ShaderMaterial({
       vertexShader: /* glsl */ `
         varying vec3 vNormal;
@@ -123,26 +138,59 @@
     torus.scale.setScalar(3.0);
     scene.add(torus);
 
-    // Start invisible, fade in after 5 s — preserved
     container.style.opacity = '0';
     fadeTimer = setTimeout(() => {
       canAnimate = true;
-      container.style.transition = 'opacity 3.5s ease-in-out';
+      container.style.transition = 'opacity 3.5s ease';
       container.style.opacity = '1';
     }, 4000);
 
+    // ─── Observers ──────────────────────────────────────────────────────────────
+
+    // 1. IntersectionObserver — fires when the container enters / leaves viewport
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        isInViewport = entry.isIntersecting;
+        syncLoop();
+      },
+      { threshold: 0 } // trigger as soon as even 1 px is visible
+    );
+    intersectionObserver.observe(container);
+
+    // 2. Page Visibility API — fires when the user switches tabs / minimises
+    const onVisibilityChange = () => {
+      isTabVisible = !document.hidden;
+      syncLoop();
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
     window.addEventListener('resize', onResize);
     window.addEventListener('mousemove', onMouseMove);
+
+    // ─── Cleanup (Astro View Transitions) ───────────────────────────────────────
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        stopLoop();
+        clearTimeout(fadeTimer);
+        intersectionObserver.disconnect();
+        document.removeEventListener('visibilitychange', onVisibilityChange);
+        window.removeEventListener('resize', onResize);
+        window.removeEventListener('mousemove', onMouseMove);
+        renderer.dispose();
+        effect.domElement.remove();
+      },
+      { once: true }
+    );
   }
 
-  // ─── Resize ───────────────────────────────────────────────────────────────────
+  // ─── Handlers ─────────────────────────────────────────────────────────────────
   function onResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     effect.setSize(window.innerWidth, window.innerHeight);
   }
 
-  // ─── Mouse ────────────────────────────────────────────────────────────────────
   function onMouseMove(e: MouseEvent) {
     mouse.x =  (e.clientX / window.innerWidth)  * 2 - 1;
     mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -150,12 +198,12 @@
 
   // ─── Animation loop ───────────────────────────────────────────────────────────
   function animate() {
+    // Re-schedule first — keeps timing consistent
     animFrameId = requestAnimationFrame(animate);
 
-    // Scale to fill 120 vh — preserved
     const vFOV = camera.fov * (Math.PI / 180);
     const visibleHeight = 2 * Math.tan(vFOV / 2) * camera.position.z;
-    const targetScale = (visibleHeight * 1.2) / 170;
+    const targetScale   = (visibleHeight * 1.2) / 170;
 
     if (canAnimate) {
       torus.scale.x += (targetScale - torus.scale.x) * 0.02;
@@ -163,32 +211,17 @@
       torus.scale.z += (targetScale - torus.scale.z) * 0.02;
     }
 
-    // Parallax — preserved
     torus.position.x += (mouse.x * 15 - torus.position.x) * 0.05;
     torus.position.y += (mouse.y * 15 - torus.position.y) * 0.05;
 
-    // Slow rotation + tilt parallax — preserved
-    torus.rotation.y += 0.001;
+    torus.rotation.y += 0.0006;
     torus.rotation.x += (BASE_TILT_X + mouse.y * 0.25 - torus.rotation.x) * 0.01;
     torus.rotation.z += (mouse.x * 0.25 - torus.rotation.z) * 0.01;
 
     effect.render(scene, camera);
   }
 
-  // ─── Cleanup (Astro View Transitions / unmount) ───────────────────────────────
-  function cleanup() {
-    cancelAnimationFrame(animFrameId);
-    clearTimeout(fadeTimer);
-    window.removeEventListener('resize', onResize);
-    window.removeEventListener('mousemove', onMouseMove);
-    renderer.dispose();
-    effect.domElement.remove();
-  }
-
-  // Astro View Transitions support
-  document.addEventListener('astro:before-swap', cleanup, { once: true });
-
   // ─── Boot ─────────────────────────────────────────────────────────────────────
+  // Don't call startLoop() directly — let IntersectionObserver decide
   init();
-  animate();
 </script>
