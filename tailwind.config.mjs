@@ -36,7 +36,7 @@ export default {
 			},
 			fontSize: {
 				/* Mobile + tablet (default); use lg:text-*-lg for desktop */
-				h1: ['48px', { lineHeight: '100%', letterSpacing: '-0.02em', fontWeight: '600' }],
+				h1: ['46px', { lineHeight: '100%', letterSpacing: '-0.02em', fontWeight: '600' }],
 				'h1-lg': ['56px', { lineHeight: '100%', letterSpacing: '-0.02em', fontWeight: '600' }],
 				h2: ['36px', { lineHeight: '120%', letterSpacing: '-0.02em' }],
 				'h2-lg': ['50px', { lineHeight: '120%', letterSpacing: '-0.02em' }],

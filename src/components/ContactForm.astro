@@ -3,106 +3,50 @@ import Button from "../components/Button.astro";
 ---
 
 <div class="hover-border w-full bg-surface/4 backdrop-blur-card p-16">
-  <form id="contact-form" class="w-full flex flex-col gap-8">
-    
-    <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE" />
-    <input type="hidden" name="from_name" value="Flow Automation Web" />
-    <input type="hidden" name="subject" value="New Automation Inquiry" />
+  <form class="w-full flex flex-col gap-8">
 
-    <input type="checkbox" name="botcheck" class="hidden" style="display: none;" />
+    <!-- Inputs Wrapper -->
+    <div class="flex flex-col gap-4">
 
-    <div class="flex flex-col gap-4">
+      <!-- Full Name -->
+      <div class="group">
+        <input
+          type="text"
+          name="name"
+          placeholder="Full name"
+          required
+          class="w-full bg-transparent border border-line/20 px-5 py-4 text-body text-text placeholder:text-text/40 outline-none transition-colors duration-300 focus:border-ui"
+        />
+      </div>
 
-      <div class="group">
-        <input
-          type="text"
-          name="name"
-          placeholder="Full name"
-          required
-          class="w-full bg-transparent border border-line/20 px-5 py-4 text-body text-text placeholder:text-text/40 outline-none transition-colors duration-300 focus:border-ui"
-        />
-      </div>
+      <!-- Email -->
+      <div class="group">
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          required
+          class="w-full bg-transparent border border-line/20 px-5 py-4 text-body text-text placeholder:text-text/40 outline-none transition-colors duration-300 focus:border-ui"
+        />
+      </div>
 
-      <div class="group">
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          required
-          class="w-full bg-transparent border border-line/20 px-5 py-4 text-body text-text placeholder:text-text/40 outline-none transition-colors duration-300 focus:border-ui"
-        />
-      </div>
+      <!-- Message -->
+      <div class="group">
+        <textarea
+          name="message"
+          rows="6"
+          placeholder="Message"
+          required
+          class="w-full bg-transparent border border-line/20 px-5 py-4 text-body text-text placeholder:text-text/40 outline-none transition-colors duration-300 focus:border-ui resize-none"
+        ></textarea>
+      </div>
 
-      <div class="group">
-        <textarea
-          name="message"
-          rows="6"
-          placeholder="Message"
-          required
-          class="w-full bg-transparent border border-line/20 px-5 py-4 text-body text-text placeholder:text-text/40 outline-none transition-colors duration-300 focus:border-ui resize-none"
-        ></textarea>
-      </div>
+    </div>
 
-    </div>
+    <!-- Button -->
+    <Button variant="primary" class="w-full justify-center">
+      LET’S AUTOMATE →
+    </Button>
 
-    <div class="cf-turnstile" data-sitekey="YOUR_TURNSTILE_SITE_KEY" data-theme="dark"></div>
-
-    <div class="flex flex-col gap-4">
-      <Button variant="primary" type="submit" id="submit-btn" class="w-full justify-center">
-        LET’S AUTOMATE →
-      </Button>
-      <div id="form-status" class="text-sm font-sora text-center h-4 transition-opacity duration-300 opacity-0"></div>
-    </div>
-
-  </form>
+  </form>
 </div>
-
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-
-<script is:inline>
-  const form = document.getElementById('contact-form');
-  const status = document.getElementById('form-status');
-  const btn = document.getElementById('submit-btn');
-
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(form);
-    const object = Object.fromEntries(formData);
-    const json = JSON.stringify(object);
-
-    // Visual feedback
-    status.style.opacity = "1";
-    status.className = "text-sm font-sora text-center text-text/60";
-    status.innerHTML = "Sending...";
-    btn.style.opacity = "0.5";
-    btn.style.pointerEvents = "none";
-
-    fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: json
-    })
-    .then(async (response) => {
-      let res = await response.json();
-      if (response.status == 200) {
-        status.innerHTML = "Message received. We'll be in touch.";
-        status.className = "text-sm font-sora text-center text-ui"; // Using your UI accent color
-        form.reset();
-      } else {
-        status.innerHTML = "Something went wrong. Please try again.";
-        status.className = "text-sm font-sora text-center text-red-500";
-      }
-    })
-    .catch(error => {
-      status.innerHTML = "Connection error. Try again later.";
-      status.className = "text-sm font-sora text-center text-red-500";
-    })
-    .then(() => {
-      btn.style.opacity = "1";
-      btn.style.pointerEvents = "auto";
-      setTimeout(() => {
-        status.style.opacity = "0";
-      }, 5000);
-    });
-  });
-</script>

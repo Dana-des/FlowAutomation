@@ -1,9 +1,9 @@
 ---
 const socials = [
-  { name: "Telegram", icon: "/Icons/Telegram.svg", link: "#" },
-  { name: "WhatsApp", icon: "/Icons/WhatsApp.svg", link: "#" },
-  { name: "Discord", icon: "/Icons/Discord.svg", link: "#" },
-  { name: "LinkedIn", icon: "/Icons/LinkedIn.svg", link: "#" },
+  { name: "Telegram", icon: "/Icons/Telegram.svg", link: "https://t.me/Groot_Ben" },
+  { name: "WhatsApp", icon: "/Icons/WhatsApp.svg", link: "https://wa.me/+393513379783" },
+  { name: "Discord", icon: "/Icons/Discord.svg", link: "https://discord.gg/no_name_no_id" },
+  { name: "LinkedIn", icon: "/Icons/LinkedIn.svg", link: "https://www.linkedin.com/in/artem-zlobin%F0%9F%87%AE%F0%9F%87%B9-518173347?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" },
 ];
 ---
 
@@ -61,6 +61,8 @@ const socials = [
               {socials.map((social) => (
                 <a 
                   href={social.link} 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={social.name}
                   class="transition-opacity duration-300 hover:opacity-20"
                 >

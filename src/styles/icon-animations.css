@@ -1,22 +1,43 @@
 /* ICON 1 — Trusted Experience: 4 Rectangles shrinking to center (Tunnel) */
-@keyframes te-shrink-tunnel {
-  0%   { transform: scale(1.5); opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: 1; }
-  100% { transform: scale(0);   opacity: 0; }
-}
-
-.te-icon g rect {
-  /* Using fixed center to ensure they collapse to the exact same point */
-  transform-origin: 20px 20px; 
+.te-icon rect {
+  transform-origin: center;
+  transform-box: fill-box;
   will-change: transform, opacity;
-  animation: te-shrink-tunnel 5s linear infinite;
+
+  animation: te-tunnel 5s linear infinite;
 }
 
-.te-icon g rect:nth-child(1) { animation-delay: 0s; }
-.te-icon g rect:nth-child(2) { animation-delay: -1.25s; }
-.te-icon g rect:nth-child(3) { animation-delay: -2.5s; }
-.te-icon g rect:nth-child(4) { animation-delay: -3.75s; }
+.te-icon rect:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.te-icon rect:nth-child(2) {
+  animation-delay: -1.66s;
+}
+
+.te-icon rect:nth-child(3) {
+  animation-delay: -3.33s;
+}
+
+@keyframes te-tunnel {
+  0% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  88% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.15);
+    opacity: 0;
+  }
+}
 
 
 /* ICON 2 — Direct Engineering: Constant drift to bottom center */

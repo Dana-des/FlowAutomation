@@ -1,7 +1,10 @@
 ---
 import Button from "./Button.astro";
 
-type NavItem = { label: string; href: string };
+type NavItem = {
+  label: string;
+  href: string;
+};
 
 const navItems: NavItem[] = [
   { label: "Home", href: "/#home" },
@@ -9,50 +12,183 @@ const navItems: NavItem[] = [
   { label: "Services", href: "/#services" },
   { label: "Cases", href: "/#cases" },
 ];
+
+const socials = [
+  { name: "Telegram", icon: "/Icons/Telegram.svg", link: "https://t.me/Groot_Ben" },
+  { name: "WhatsApp", icon: "/Icons/WhatsApp.svg", link: "https://wa.me/+393513379783" },
+  { name: "Discord", icon: "/Icons/Discord.svg", link: "https://discord.gg/no_name_no_id" },
+  { name: "LinkedIn", icon: "/Icons/LinkedIn.svg", link: "https://www.linkedin.com/in/artem-zlobin%F0%9F%87%AE%F0%9F%87%B9-518173347?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" },
+];
+
+const totalItems = navItems.length;
 ---
 
-<header class="fixed top-[24px] left-1/2 z-[999] -translate-x-1/2 w-max">
+<header class="fixed top-[24px] left-1/2 z-[999] w-[calc(100%-40px)] max-w-max -translate-x-1/2">
   <nav
     aria-label="Primary"
-    class="hover-border flex items-center gap-[120px] bg-surface/4 pl-[16px] pr-[8px] py-[8px] backdrop-blur-card"
+    class="hover-border flex items-center justify-between gap-[120px] bg-surface/4 pl-[16px] pr-[8px] py-[8px] backdrop-blur-card"
   >
-      <a href="#home" class="inline-flex items-center gap-2 no-underline">
-        <span class="h-2.5 w-2.5 rounded-full bg-ui"></span>
-        <span class="text-h6 text-text">FlowAutomation</span>
-      </a>
+    <a href="/#home" class="inline-flex items-center gap-2 no-underline z-50">
+      <span class="h-2.5 w-2.5 rounded-full bg-ui"></span>
+      <span class="text-h6 text-text">FlowAutomation</span>
+    </a>
 
-      <div class="flex flex-1 items-center justify-end">
-        <div class="hidden items-center gap-6 md:flex">
-          <ul class="flex items-center gap-6" aria-label="Primary links">
-            {navItems.map((item) => (
-              <li>
-                <Button variant="nav_button" href={item.href} ariaLabel={item.label}>
-                  {item.label}
-                </Button>
-              </li>
-            ))}
-          </ul>
+    <div class="hidden items-center gap-6 md:flex">
+      <ul class="flex items-center gap-6" aria-label="Primary links">
+        {navItems.map((item) => (
+          <li>
+            <Button variant="nav_button" href={item.href} ariaLabel={item.label}>
+              {item.label}
+            </Button>
+          </li>
+        ))}
+      </ul>
+      <Button variant="small" href="/#contact" ariaLabel="Get a quote">
+        Get a quote
+      </Button>
+    </div>
 
-          <Button variant="small" href="/#contact" ariaLabel="Get a quote">
-            Get a quote
-          </Button>
-        </div>
-
-        <button
-         type="button"
-            class="inline-flex h-10 w-10 items-center justify-center bg-surface/4 backdrop-blur-card transition-colors duration-300 ease-out md:hidden"
-         aria-label="Open menu"
-      >
-          <img
-            src="/Icons/Menu%20Icon.svg"
-            width="40"
-            height="40"
-            alt=""
-            loading="lazy"
-            decoding="async"
-          />
-        </button>
-      </div>
-    </nav>
-  </div>
+    <button
+      id="mobile-menu-toggle"
+      type="button"
+      aria-label="Toggle mobile menu"
+      aria-expanded="false"
+      class="mobile-menu-toggle group relative z-50 flex h-[40px] w-[40px] items-center justify-center md:hidden"
+    >
+      <span class="line-top absolute h-[1px] w-[24px] bg-text"></span>
+      <span class="line-bottom absolute h-[1px] w-[24px] bg-text"></span>
+    </button>
+  </nav>
 </header>
+
+<div id="mobile-menu" class="fixed inset-0 z-[950] pointer-events-none md:hidden">
+  
+  <div class="mobile-menu-bg absolute inset-0 bg-bg md:hidden"></div>
+
+  <div class="relative z-10 flex h-[100dvh] flex-col justify-between px-6 pb-12 pt-[140px]">
+    
+    <div class="flex flex-col gap-6">
+      {navItems.map((item, index) => (
+        <a
+          href={item.href}
+          class="mobile-item group flex items-center justify-between text-h5 uppercase text-text no-underline"
+          style={`--delay-in:${0.2 + index * 0.08}s; --delay-out:${(totalItems - index) * 0.05}s;`}
+        >
+          <span class="transition-colors duration-300 group-hover:text-ui">{item.label}</span>
+          <span class="text-text transition-colors duration-300 group-hover:text-ui">→</span>
+        </a>
+      ))}
+
+      <div class="mobile-item mt-6" style={`--delay-in:0.52s; --delay-out:0s;`}>
+        <Button variant="primary" href="/#contact" ariaLabel="Get a quote" class="w-full justify-center">
+          Get a quote
+        </Button>
+      </div>
+    </div>
+
+    <div class="mobile-item flex flex-col items-center gap-5" style={`--delay-in:0.6s; --delay-out:0s;`}>
+      <p class="text-small font-normal uppercase text-text/40">Contact us</p>
+
+      <div class="flex gap-5">
+        {socials.map((social) => (
+          <a
+          href={social.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={social.name}
+          class="transition-transform hover:scale-110 active:scale-95">
+            <img src={social.icon} alt={`${social.name} icon`} class="h-6 w-6 object-contain" loading="lazy" />
+          </a>
+        ))}
+      </div>
+
+      <a href="mailto:info@flowautomation.eu" class="text-body text-text transition-colors hover:text-ui">
+        info@flowautomation.eu
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Background Curtain Animation */
+  .mobile-menu-bg {
+    transform: translateY(100%);
+    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #mobile-menu.is-open .mobile-menu-bg {
+    transform: translateY(0%);
+  }
+
+  /* Staggered Items Animation (In & Out) */
+  .mobile-item {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition-delay: var(--delay-out); 
+  }
+  
+  #mobile-menu.is-open {
+    pointer-events: auto;
+  }
+  
+  #mobile-menu.is-open .mobile-item {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: var(--delay-in);
+  }
+
+  /* Hamburger Icon Pure CSS Positioning & Animation */
+  .mobile-menu-toggle .line-top {
+    transform: translateY(-4.5px);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  
+  .mobile-menu-toggle .line-bottom {
+    transform: translateY(4.5px);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .mobile-menu-toggle.is-active .line-top {
+    transform: translateY(0) rotate(45deg);
+  }
+  
+  .mobile-menu-toggle.is-active .line-bottom {
+    transform: translateY(0) rotate(-45deg);
+  }
+
+  /* Prevent scrolling when menu is open */
+  :global(body.menu-open) {
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  const toggle = document.getElementById("mobile-menu-toggle");
+  const menu = document.getElementById("mobile-menu");
+
+  const openMenu = () => {
+    menu?.classList.add("is-open");
+    toggle?.classList.add("is-active");
+    document.body.classList.add("menu-open");
+    toggle?.setAttribute("aria-expanded", "true");
+  };
+
+  const closeMenu = () => {
+    menu?.classList.remove("is-open");
+    toggle?.classList.remove("is-active");
+    document.body.classList.remove("menu-open");
+    toggle?.setAttribute("aria-expanded", "false");
+  };
+
+  toggle?.addEventListener("click", () => {
+    if (menu?.classList.contains("is-open")) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+
+  menu?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", closeMenu);
+  });
+</script>
