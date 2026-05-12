@@ -36,7 +36,7 @@
   }
 
   .section {
-    @apply bg-transparent py-section-m md:py-section-d;
+    @apply py-section-m md:py-section-d;
   }
 
   .card {

@@ -2,227 +2,250 @@
 // src/components/TwistedTorus.astro
 ---
 
-<div
-  id="torus-container"
-  class="w-full h-screen fixed top-0 left-0 overflow-hidden pointer-events-none z-0"
-  aria-hidden="true"
-></div>
+<!--
+  Both containers are full-viewport so Three.js renders at a consistent
+  aspect ratio. The torus mesh is positioned in world space at its corner —
+  no CSS corner tricks needed. overflow-hidden clips whatever goes off-screen.
+-->
+<div id="torus-bl" class="w-full h-screen fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true"></div>
+<div id="torus-tr" class="w-full h-screen fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true"></div>
 
 <script>
   import * as THREE from 'three';
   import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
   import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js';
 
-  // ─── State ────────────────────────────────────────────────────────────────────
-  let scene: THREE.Scene;
-  let camera: THREE.PerspectiveCamera;
-  let renderer: THREE.WebGLRenderer;
-  let effect: AsciiEffect;
-  let torus: THREE.Mesh;
-  let animFrameId: number | null = null;
-  let fadeTimer: ReturnType<typeof setTimeout>;
-  let canAnimate = false;
+  // ─── Shared state ─────────────────────────────────────────────────────────────
+  const mouse        = { x: 0, y: 0 };
+  const BASE_TILT    =  35 * (Math.PI / 180); // 35° — used ± per instance
+  let   isTabVisible = !document.hidden;
 
-  // Visibility flags — BOTH must be true for the loop to run
-  let isInViewport = false;
-  let isTabVisible  = !document.hidden;
-
-  const container = document.getElementById('torus-container') as HTMLElement;
-  const mouse     = { x: 0, y: 0 };
-  const BASE_TILT_X = -35 * (Math.PI / 180);
-
-  // ─── Loop control ─────────────────────────────────────────────────────────────
-  /** Start the rAF loop only if not already running */
-  function startLoop() {
-    if (animFrameId !== null) return; // already running
-    animFrameId = requestAnimationFrame(animate);
+  // ─── Instance config ──────────────────────────────────────────────────────────
+  // Each torus gets a config that makes it the polar opposite of the other:
+  //   rotDir      — +1 / -1  : clockwise vs counter-clockwise Y rotation
+  //   cornerX/Y   — ±0.5     : world-space corner fraction (calculated per frame)
+  //   parallaxDir — +1 / -1  : follows mouse vs pushes away from mouse
+  //   baseTilt    — ±35°     : initial X tilt mirrors between the two
+  interface TorusConfig {
+    rotDir:      1 | -1;
+    cornerX:     0.5 | -0.5; // fraction of visible half-width
+    cornerY:     0.5 | -0.5; // fraction of visible half-height
+    parallaxDir: 1 | -1;
+    baseTilt:    number;
   }
 
-  /** Cancel the rAF loop and free the frame slot completely */
-  function stopLoop() {
-    if (animFrameId === null) return; // already stopped
-    cancelAnimationFrame(animFrameId);
-    animFrameId = null;
-  }
+  const configs: [string, TorusConfig][] = [
+    // Bottom-left: tilts toward viewer from top, follows mouse, spins CW
+    ['torus-bl', { rotDir: 1,  cornerX: -0.4, cornerY: -0.4, parallaxDir:  1, baseTilt: -BASE_TILT }],
+    // Top-right:   tilts toward viewer from bottom, pushes away, spins CCW
+    ['torus-tr', { rotDir: -1, cornerX:  0.4, cornerY:  0.4, parallaxDir: -1, baseTilt:  BASE_TILT }],
+  ];
 
-  /** Called whenever visibility state changes */
-  function syncLoop() {
-    if (isInViewport && isTabVisible) {
-      startLoop();
-    } else {
-      stopLoop();
+  // ─── Geometry + material (shared — uploaded to GPU once) ─────────────────────
+  const twistedTorusFunc = (u: number, v: number, target: THREE.Vector3) => {
+    const radius = 60;
+    const tube   = 25;
+    const twists = 0;
+    const uAngle = u * Math.PI * 2;
+    const vAngle = v * Math.PI * 2 + uAngle * twists;
+    target.set(
+      (radius + tube * Math.cos(vAngle)) * Math.cos(uAngle),
+      (radius + tube * Math.cos(vAngle)) * Math.sin(uAngle),
+      tube * Math.sin(vAngle)
+    );
+  };
+  const sharedGeometry = new ParametricGeometry(twistedTorusFunc, 150, 4);
+  const sharedMaterial = new THREE.ShaderMaterial({
+    vertexShader: /* glsl */ `
+      varying vec3 vNormal;
+      varying vec3 vViewPosition;
+      void main() {
+        vNormal = normalize(normalMatrix * normal);
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+        vViewPosition = -mvPosition.xyz;
+        gl_Position = projectionMatrix * mvPosition;
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      varying vec3 vNormal;
+      varying vec3 vViewPosition;
+      void main() {
+        vec3 normal  = normalize(vNormal);
+        vec3 viewDir = normalize(vViewPosition);
+        float rim = pow(1.0 - max(dot(viewDir, normal), 0.0), 2.0);
+        gl_FragColor = vec4(vec3(rim * 3.5), 1.0);
+      }
+    `,
+  });
+
+  // ─── Factory ──────────────────────────────────────────────────────────────────
+  function createTorusInstance(containerId: string, cfg: TorusConfig) {
+    const container = document.getElementById(containerId);
+    if (!container) return null;
+
+    let scene:    THREE.Scene;
+    let camera:   THREE.PerspectiveCamera;
+    let renderer: THREE.WebGLRenderer;
+    let effect:   AsciiEffect;
+    let torus:    THREE.Mesh;
+    let animFrameId: number | null = null;
+    let canAnimate   = false;
+    let isInViewport = false;
+    let fadeTimer:   ReturnType<typeof setTimeout>;
+
+    // ── Loop control ────────────────────────────────────────────────────────
+    function startLoop() {
+      if (animFrameId !== null) return;
+      animFrameId = requestAnimationFrame(animate);
     }
-  }
+    function stopLoop() {
+      if (animFrameId === null) return;
+      cancelAnimationFrame(animFrameId);
+      animFrameId = null;
+    }
+    function syncLoop() {
+      isInViewport && isTabVisible ? startLoop() : stopLoop();
+    }
 
-  // ─── Init ─────────────────────────────────────────────────────────────────────
-  function init() {
-    scene = new THREE.Scene();
-    scene.background = null;
+    // ── Init ────────────────────────────────────────────────────────────────
+    function init() {
+      scene = new THREE.Scene();
+      scene.background = null;
 
-    camera = new THREE.PerspectiveCamera(
-      50,
-      window.innerWidth / window.innerHeight,
-      1,
-      1000
-    );
-    camera.position.z = 250;
+      camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
+      camera.position.z = 250;
 
-    // Pixel ratio capped at 1 — important when 5 animations are on the page
-    renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
-    renderer.setClearColor(0x000000, 0);
+      renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
+      renderer.setClearColor(0x000000, 0);
 
-    effect = new AsciiEffect(renderer, ' .:-=+*#%@', {
-      invert: false,
-      resolution: 0.15,
-    });
-    effect.setSize(window.innerWidth, window.innerHeight);
+      effect = new AsciiEffect(renderer, ' .:-=+*#%@', { invert: false, resolution: 0.15 });
+      effect.setSize(window.innerWidth, window.innerHeight);
 
-    Object.assign(effect.domElement.style, {
-      color: '#336FE8',
-      backgroundColor: 'transparent',
-      fontFamily: 'monospace',
-      fontSize: '18px',
-      fontWeight: '400',
-      textShadow: `
-        0px 0px 4px rgba(51, 111, 232, 0.8),
-        0px 0px 12px rgba(51, 111, 232, 0.8),
-        0px 0px 24px rgba(51, 111, 232, 0.8)
-      `,
-    });
+      Object.assign(effect.domElement.style, {
+        color: '#336FE8',
+        backgroundColor: 'transparent',
+        fontFamily: 'monospace',
+        fontSize: '18px',
+        fontWeight: '400',
+        textShadow: `
+          0px 0px 4px rgba(51, 111, 232, 0.8),
+          0px 0px 12px rgba(51, 111, 232, 0.8),
+          0px 0px 24px rgba(51, 111, 232, 0.8)
+        `,
+      });
 
-    container.appendChild(effect.domElement);
+      container.appendChild(effect.domElement);
 
-    // ─── Geometry ───────────────────────────────────────────────────────────────
-    const twistedTorusFunc = (u: number, v: number, target: THREE.Vector3) => {
-      const radius = 60;
-      const tube   = 23;
-      const twists = 2;
-      const uAngle = u * Math.PI * 2;
-      const vAngle = v * Math.PI * 2 + uAngle * twists;
-      target.set(
-        (radius + tube * Math.cos(vAngle)) * Math.cos(uAngle),
-        (radius + tube * Math.cos(vAngle)) * Math.sin(uAngle),
-        tube * Math.sin(vAngle)
+      // Each torus is a separate mesh but shares geometry + material —
+      // no extra GPU upload, just two draw calls with different transforms.
+      torus = new THREE.Mesh(sharedGeometry, sharedMaterial);
+      torus.rotation.x = cfg.baseTilt;
+      torus.scale.setScalar(3.0);
+      scene.add(torus);
+
+      // Fade in
+      container.style.opacity = '0';
+      fadeTimer = setTimeout(() => {
+        canAnimate = true;
+        container.style.transition = 'opacity 3.5s ease';
+        container.style.opacity = '1';
+      }, 5000);
+
+      const io = new IntersectionObserver(
+        ([entry]) => { isInViewport = entry.isIntersecting; syncLoop(); },
+        { threshold: 0 }
       );
-    };
+      io.observe(container);
 
-    const geometry = new ParametricGeometry(twistedTorusFunc, 150, 4);
-
-    // ─── Shader ─────────────────────────────────────────────────────────────────
-    const material = new THREE.ShaderMaterial({
-      vertexShader: /* glsl */ `
-        varying vec3 vNormal;
-        varying vec3 vViewPosition;
-        void main() {
-          vNormal = normalize(normalMatrix * normal);
-          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-          vViewPosition = -mvPosition.xyz;
-          gl_Position = projectionMatrix * mvPosition;
-        }
-      `,
-      fragmentShader: /* glsl */ `
-        varying vec3 vNormal;
-        varying vec3 vViewPosition;
-        void main() {
-          vec3 normal  = normalize(vNormal);
-          vec3 viewDir = normalize(vViewPosition);
-          float rim = pow(1.0 - max(dot(viewDir, normal), 0.0), 2.0);
-          gl_FragColor = vec4(vec3(rim * 3.5), 1.0);
-        }
-      `,
-    });
-
-    torus = new THREE.Mesh(geometry, material);
-    torus.rotation.x = BASE_TILT_X;
-    torus.scale.setScalar(3.0);
-    scene.add(torus);
-
-    container.style.opacity = '0';
-    fadeTimer = setTimeout(() => {
-      canAnimate = true;
-      container.style.transition = 'opacity 3.5s ease';
-      container.style.opacity = '1';
-    }, 0.5);
-
-    // ─── Observers ──────────────────────────────────────────────────────────────
-
-    // 1. IntersectionObserver — fires when the container enters / leaves viewport
-    const intersectionObserver = new IntersectionObserver(
-      ([entry]) => {
-        isInViewport = entry.isIntersecting;
-        syncLoop();
-      },
-      { threshold: 0 } // trigger as soon as even 1 px is visible
-    );
-    intersectionObserver.observe(container);
-
-    // 2. Page Visibility API — fires when the user switches tabs / minimises
-    const onVisibilityChange = () => {
-      isTabVisible = !document.hidden;
-      syncLoop();
-    };
-    document.addEventListener('visibilitychange', onVisibilityChange);
-
-    window.addEventListener('resize', onResize);
-    window.addEventListener('mousemove', onMouseMove);
-
-    // ─── Cleanup (Astro View Transitions) ───────────────────────────────────────
-    document.addEventListener(
-      'astro:before-swap',
-      () => {
-        stopLoop();
+      cleanupFns.push(() => {
+        io.disconnect();
         clearTimeout(fadeTimer);
-        intersectionObserver.disconnect();
-        document.removeEventListener('visibilitychange', onVisibilityChange);
-        window.removeEventListener('resize', onResize);
-        window.removeEventListener('mousemove', onMouseMove);
+        stopLoop();
         renderer.dispose();
         effect.domElement.remove();
-      },
-      { once: true }
-    );
-  }
-
-  // ─── Handlers ─────────────────────────────────────────────────────────────────
-  function onResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    effect.setSize(window.innerWidth, window.innerHeight);
-  }
-
-  function onMouseMove(e: MouseEvent) {
-    mouse.x =  (e.clientX / window.innerWidth)  * 2 - 1;
-    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-  }
-
-  // ─── Animation loop ───────────────────────────────────────────────────────────
-  function animate() {
-    // Re-schedule first — keeps timing consistent
-    animFrameId = requestAnimationFrame(animate);
-
-    const vFOV = camera.fov * (Math.PI / 180);
-    const visibleHeight = 2 * Math.tan(vFOV / 2) * camera.position.z;
-    const mobileFactor = window.innerWidth < 768 ? 0.99 : 1.2;
-const targetScale  = (visibleHeight * mobileFactor) / 170;
-
-    if (canAnimate) {
-      torus.scale.x += (targetScale - torus.scale.x) * 0.02;
-      torus.scale.y += (targetScale - torus.scale.y) * 0.02;
-      torus.scale.z += (targetScale - torus.scale.z) * 0.02;
+      });
     }
 
-    torus.position.x += (mouse.x * 15 - torus.position.x) * 0.05;
-    torus.position.y += (mouse.y * 15 - torus.position.y) * 0.05;
+    // ── Animate ─────────────────────────────────────────────────────────────
+    function animate() {
+      animFrameId = requestAnimationFrame(animate);
 
-    torus.rotation.y += 0.0003;
-    torus.rotation.x += (BASE_TILT_X + mouse.y * 0.25 - torus.rotation.x) * 0.01;
-    torus.rotation.z += (mouse.x * 0.25 - torus.rotation.z) * 0.01;
+      const vFOV = camera.fov * (Math.PI / 180);
+      const visibleHeight = 2 * Math.tan(vFOV / 2) * camera.position.z;
+      const visibleWidth  = visibleHeight * (window.innerWidth / window.innerHeight);
 
-    effect.render(scene, camera);
+      // Corner anchor in world space — the torus center rests exactly
+      // at the viewport corner, extending inward toward screen centre.
+      const cornerWX = cfg.cornerX * visibleWidth;
+      const cornerWY = cfg.cornerY * visibleHeight;
+
+      // Parallax offset — opposite signs between instances creates a
+      // "spread apart / pull together" feel as the mouse moves.
+      const px = cfg.parallaxDir * mouse.x * 22;
+      const py = cfg.parallaxDir * mouse.y * 22;
+
+      // Scale — larger than the original centered torus so a generous
+      // arc is visible from each corner. Mobile slightly smaller.
+      if (canAnimate) {
+        const mobileFactor = window.innerWidth < 768 ? 1.1 : 1.5;
+        const targetScale  = (visibleHeight * mobileFactor) / 170;
+        torus.scale.x += (targetScale - torus.scale.x) * 0.02;
+        torus.scale.y += (targetScale - torus.scale.y) * 0.02;
+        torus.scale.z += (targetScale - torus.scale.z) * 0.02;
+      }
+
+      // Lerp position toward corner + parallax offset
+      torus.position.x += (cornerWX + px - torus.position.x) * 0.05;
+      torus.position.y += (cornerWY + py - torus.position.y) * 0.05;
+
+      // Y rotation — polar: one CW, one CCW
+      torus.rotation.y += cfg.rotDir * 0.0003;
+
+      // Tilt parallax — polar: one leans with mouse, one leans against
+      torus.rotation.x += (cfg.baseTilt + cfg.parallaxDir * mouse.y * 0.3 - torus.rotation.x) * 0.01;
+      torus.rotation.z += (cfg.parallaxDir * mouse.x * 0.3 - torus.rotation.z) * 0.01;
+
+      effect.render(scene, camera);
+    }
+
+    // ── Resize ──────────────────────────────────────────────────────────────
+    function onResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      effect.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    const cleanupFns: (() => void)[] = [];
+    init();
+
+    return { syncLoop, onResize, cleanup: () => cleanupFns.forEach(fn => fn()) };
   }
 
   // ─── Boot ─────────────────────────────────────────────────────────────────────
-  // Don't call startLoop() directly — let IntersectionObserver decide
-  init();
+  const instances = configs
+    .map(([id, cfg]) => createTorusInstance(id, cfg))
+    .filter(Boolean) as NonNullable<ReturnType<typeof createTorusInstance>>[];
+
+  // ─── Shared listeners ─────────────────────────────────────────────────────────
+  window.addEventListener('mousemove', (e: MouseEvent) => {
+    mouse.x =  (e.clientX / window.innerWidth)  * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    isTabVisible = !document.hidden;
+    instances.forEach(inst => inst.syncLoop());
+  });
+
+  window.addEventListener('resize', () => {
+    instances.forEach(inst => inst.onResize());
+  });
+
+  // ─── Cleanup ──────────────────────────────────────────────────────────────────
+  document.addEventListener('astro:before-swap', () => {
+    instances.forEach(inst => inst.cleanup());
+    sharedGeometry.dispose();
+    sharedMaterial.dispose();
+  }, { once: true });
 </script>
