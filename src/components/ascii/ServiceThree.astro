@@ -57,10 +57,10 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
     // Opaque black clear — same fix as ServiceTwo so invert: true
     // correctly makes dark areas transparent and lit areas show characters
-    renderer.setClearColor(0x000000, 1);
+    renderer.setClearColor(0x000000, 0);
 
     effect = new AsciiEffect(renderer, ' .:-=+*#%@', {
-      invert: true,
+      invert: false,
       resolution: 0.15,
     });
     effect.setSize(container.clientWidth, container.clientHeight);
