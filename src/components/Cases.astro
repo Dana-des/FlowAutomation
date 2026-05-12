@@ -96,27 +96,27 @@ const cases: Case[] = [
           class="mx-auto text-center transition-opacity duration-300 ease-out" 
           data-cases-text
         >
-          <h2 class="text-h2 text-text lg:text-h2-lg">Quiet flows. Loud results</h2>
+          <h2 class="reveal text-h2 text-text lg:text-h2-lg">Quiet flows. Loud results</h2>
         </header>
       </div>
 
       <div class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 md:pb-section-d pb-section-m">
         {cases.map((card) => (
-          <article class={`card hover-border flex w-full flex-col gap-6 p-card bg-surface/4 backdrop-blur-card text-left ${card.desktopPlacement}`}>
+          <article class={`reveal-card card hover-border flex w-full flex-col gap-6 p-card bg-surface/4 backdrop-blur-card text-left ${card.desktopPlacement}`}>
             
-            <div class="flex items-center justify-between text-small uppercase text-text/20">
+            <div class="reveal-top delay-1 flex items-center justify-between text-small uppercase text-text/20">
               <span>{card.id}</span>
               <span>{card.tag}</span>
             </div>
 
-            <div class="flex items-baseline gap-2.5">
+            <div class="reveal flex items-baseline gap-2.5">
               <span class="text-h1 font-normal text-ui lg:text-h1-lg">{card.metric}</span>
               <span class="text-h6 uppercase text-text/80">{card.metricLabel}</span>
             </div>
 
-            <hr class="border-line/10" />
+            <hr class="reveal border-line/10" />
 
-            <div class="flex flex-col gap-3">
+            <div class="reveal delay-1 flex flex-col gap-3">
               <h3 class="text-h5 text-text lg:text-h5-lg">{card.title}</h3>
               <!-- The descriptions are mapped perfectly into separate paragraph blocks with a 16px (gap-4) space -->
               <div class="flex flex-col gap-4">
@@ -126,7 +126,7 @@ const cases: Case[] = [
               </div>
             </div>
 
-            <div class="flex items-start justify-between">
+            <div class="reveal delay-1 flex items-start justify-between">
               {card.stats.map((stat) => (
                 <div class="flex flex-col gap-0">
                   <span class="text-body text-primary">{stat.value}</span>

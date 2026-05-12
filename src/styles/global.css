@@ -49,3 +49,138 @@
   background: rgb(var(--c-primary)/0.4);
   color: rgb(var(--c-white));
 }
+
+
+
+
+
+/* =========================================
+   REVEAL ANIMATIONS
+========================================= */
+
+.reveal {
+  opacity: 0;
+  filter: blur(12px);
+  transform: translate3d(0, 40px, 0);
+
+  transition:
+    opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  filter: blur(0px);
+  transform: translate3d(0, 0, 0);
+}
+
+
+/* =========================================
+   CARD REVEAL
+========================================= */
+
+.reveal-card {
+  opacity: 0;
+  backdrop-filter: blur(16px);
+  transform:
+    scale(0.85);
+
+  transition:
+    opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+
+  will-change: opacity, transform;
+}
+
+.reveal-card.visible {
+  opacity: 1;
+  backdrop-filter: blur(16px);
+  transform:
+    scale(1);
+}
+
+
+/* =========================================
+   REVEAL FROM TOP
+========================================= */
+
+.reveal-top {
+  opacity: 0;
+
+  transform:
+    translate3d(0, -24px, 0);
+
+  filter: blur(12px);
+
+  transition:
+    opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 1s cubic-bezier(0.22, 1, 0.36, 1);
+
+  will-change:
+    opacity,
+    transform,
+    filter;
+}
+
+.reveal-top.visible {
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0);
+
+  filter: blur(0px);
+}
+
+
+
+/* =========================================
+   STAGGER DELAYS
+========================================= */
+
+.delay-1 {
+  transition-delay: 0.1s;
+}
+
+.delay-2 {
+  transition-delay: 0.5s;
+}
+
+.delay-3 {
+  transition-delay: 0.6s;
+}
+
+.delay-4 {
+  transition-delay: 0.7s;
+}
+
+
+
+
+
+/* =========================================
+   WORD REVEAL
+========================================= */
+
+.about-reveal {
+  line-height: 1.2;
+}
+
+.about-word {
+  display: inline-block;
+  white-space: pre;
+}
+
+.about-word {
+  opacity: 0;
+  filter: blur(12px);
+
+  transition:
+    opacity 0.35s linear,
+    filter 0.35s linear;
+
+  will-change:
+    opacity,
+    filter;
+}

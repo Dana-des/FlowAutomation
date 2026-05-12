@@ -90,7 +90,7 @@ const services = [
 
   <!-- Heading -->
   <div class="container max-w-content pt-section-m md:pt-section-d">
-    <h2 class="text-h2 text-center mb-20 md:mb-40 lg:text-h2-lg">Systems we build</h2>
+    <h2 class="reveal text-h2 text-center mb-20 md:mb-40 lg:text-h2-lg">Systems we build</h2>
   </div>
 
   <!-- ─── Service groups ──────────────────────────────────────────────────── -->
@@ -107,7 +107,7 @@ const services = [
           pointer-events-none: clicks pass through to the content above.
           z-0: sits behind the content grid (z-10).
         -->
-        <div class="hidden md:block sticky top-0 h-screen overflow-hidden pointer-events-none z-0">
+        <div class="reveal-card delay-2 hidden md:block sticky top-0 h-screen overflow-hidden pointer-events-none z-0">
           {i === 0 && <ServiceOne />}
           {i === 1 && <ServiceTwo />}
           {i === 2 && <ServiceThree />}
@@ -130,12 +130,12 @@ const services = [
               vertically while the right column's cards scroll past.
             -->
             <div class="md:sticky md:top-0 md:h-screen flex md:items-center">
-              <div class="flex flex-col gap-4 max-w-[520px]">
-                <h6 class="text-h6 text-ui uppercase">
+              <div class=" flex flex-col gap-4 max-w-[520px]">
+                <h6 class="reveal text-h6 text-ui uppercase">
                   [{service.id}] {service.title}
                 </h6>
-                <h3 class="text-h3 lg:text-h3-lg">{service.heading}</h3>
-                <p class="text-body text-text/80">{service.description}</p>
+                <h3 class="reveal delay-1 text-h3 lg:text-h3-lg">{service.heading}</h3>
+                <p class="reveal delay-1 text-body text-text/80">{service.description}</p>
               </div>
             </div>
 
@@ -149,19 +149,19 @@ const services = [
             <div class="flex flex-col gap-6 md:my-[100vh]">
 
               {service.cards.map((card) => (
-                <article class="hover-border bg-surface/4 backdrop-blur-card p-card flex flex-col">
+                <article class="reveal-card hover-border bg-surface/4 backdrop-blur-card p-card flex flex-col">
 
                   <div class="flex flex-col gap-4 mb-6">
                     <div class="flex items-center gap-2.5">
-                      <div class="w-[10px] h-[10px] rounded-full bg-ui"></div>
-                      <h5 class="text-body">{card.title}</h5>
+                      <div class="reveal-card delay-2 w-[10px] h-[10px] rounded-full bg-ui"></div>
+                      <h5 class="reveal text-body">{card.title}</h5>
                     </div>
-                    <p class="text-body text-text/80">{card.description}</p>
+                    <p class="reveal delay-1 text-body text-text/80">{card.description}</p>
                   </div>
 
-                  <div class="h-px bg-line/10 mb-6"></div>
+                  <div class="reveal h-px bg-line/10 mb-6"></div>
 
-                  <Text variant="text" class="justify-start outcomes-btn">OUTCOMES +</Text>
+                  <Text variant="text" class="reveal delay-2 justify-start outcomes-btn">OUTCOMES +</Text>
 
                   <div class="outcomes-content overflow-hidden max-h-0 opacity-0 transition-all duration-500 ease-in-out">
                     <div class="pt-4 flex flex-col gap-1 text-text/80">

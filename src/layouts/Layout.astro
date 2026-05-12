@@ -32,5 +32,27 @@ const {
     <slot />
 
     <script src="../scripts/hoverBorder.ts"></script>
+    
+    <script>
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        }
+      });
+    },
+    {
+      threshold: 0.12,
+    }
+  );
+
+  document
+  .querySelectorAll(".reveal, .reveal-top, .reveal-card")
+  .forEach((el) => {
+    observer.observe(el);
+  });
+</script>
+
   </body>
 </html>
