@@ -161,7 +161,7 @@ const services = [
 
                   <div class="reveal h-px bg-line/10 mb-6"></div>
 
-                  <Text variant="text" class="reveal delay-2 justify-start outcomes-btn">OUTCOMES +</Text>
+                  <Text variant="text" class="reveal delay-2 justify-start outcomes-btn [&.is-active_span]:text-ui">OUTCOMES +</Text>
 
                   <div class="outcomes-content overflow-hidden max-h-0 opacity-0 transition-all duration-500 ease-in-out">
                     <div class="pt-4 flex flex-col gap-1 text-text/80">
@@ -193,7 +193,7 @@ const services = [
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       const content = btn.nextElementSibling as HTMLElement;
-      const label   = btn.querySelector('*')  as HTMLElement;
+      const label   = btn.querySelector('span')  as HTMLElement;
       const isOpen  = content.classList.contains('open');
 
       if (isOpen) {
@@ -206,6 +206,7 @@ const services = [
         content.style.maxHeight = content.scrollHeight + 'px';
         content.style.opacity   = '1';
         label.textContent       = 'OUTCOMES −';
+        btn.classList.add('is-active');
       }
     });
   });
