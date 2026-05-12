@@ -55,13 +55,13 @@
 
     renderer = new THREE.WebGLRenderer({ antialias: false });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
-    renderer.setClearColor(0x000000, 0);
+    renderer.setClearColor(0x000000, 1);
 
     // invert: false — characters appear only on the bright rim of the shape.
     // invert: true fills the entire background with characters (wrong for
     // transparent overlays). The visual result is the same rim-glow look.
     effect = new AsciiEffect(renderer, ' .:-=+*#%@', {
-      invert: false,
+      invert: true,
       resolution: 0.15,
     });
     effect.setSize(container.clientWidth, container.clientHeight);
@@ -141,10 +141,9 @@
   }
 
   function onMouseMove(e: MouseEvent) {
-    const rect = container.getBoundingClientRect();
-    mouse.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
-    mouse.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
-  }
+  mouse.x =  (e.clientX / window.innerWidth)  * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+}
 
   function animate() {
     animFrameId = requestAnimationFrame(animate);

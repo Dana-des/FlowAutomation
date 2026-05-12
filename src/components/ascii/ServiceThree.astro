@@ -1,0 +1,218 @@
+---
+// src/components/ascii/ServiceThree.astro
+// Service 3 — Stacked Skeletons / Product & Engineering
+---
+
+<div
+  id="service-three-container"
+  class="w-full h-full"
+  aria-hidden="true"
+></div>
+
+<script>
+  import * as THREE from 'three';
+  import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
+
+  // ─── State ────────────────────────────────────────────────────────────────────
+  let scene: THREE.Scene;
+  let camera: THREE.PerspectiveCamera;
+  let renderer: THREE.WebGLRenderer;
+  let effect: AsciiEffect;
+  let skeletonGroup: THREE.Group;
+  let animFrameId: number | null = null;
+  let isInViewport = false;
+  let isTabVisible = !document.hidden;
+
+  const container = document.getElementById('service-three-container') as HTMLElement;
+  const mouse = { x: 0, y: 0 };
+
+  // ─── Loop control ─────────────────────────────────────────────────────────────
+  function startLoop() {
+    if (animFrameId !== null) return;
+    animFrameId = requestAnimationFrame(animate);
+  }
+  function stopLoop() {
+    if (animFrameId === null) return;
+    cancelAnimationFrame(animFrameId);
+    animFrameId = null;
+  }
+  function syncLoop() {
+    isInViewport && isTabVisible ? startLoop() : stopLoop();
+  }
+
+  // ─── Init ─────────────────────────────────────────────────────────────────────
+  function init() {
+    scene = new THREE.Scene();
+    scene.background = null;
+
+    camera = new THREE.PerspectiveCamera(
+      50,
+      container.clientWidth / container.clientHeight,
+      1,
+      1000
+    );
+    camera.position.z = 420; // preserved
+
+    renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
+    // Opaque black clear — same fix as ServiceTwo so invert: true
+    // correctly makes dark areas transparent and lit areas show characters
+    renderer.setClearColor(0x000000, 1);
+
+    effect = new AsciiEffect(renderer, ' .:-=+*#%@', {
+      invert: true,
+      resolution: 0.15,
+    });
+    effect.setSize(container.clientWidth, container.clientHeight);
+
+    // Colors and glow — preserved exactly
+    Object.assign(effect.domElement.style, {
+      color: '#336FE8',
+      backgroundColor: 'transparent',
+      fontFamily: 'monospace',
+      fontSize: '18px',
+      fontWeight: '500',
+      textShadow: `
+        0px 0px 4px rgba(51, 111, 232, 0.8),
+        0px 0px 12px rgba(51, 111, 232, 0.8),
+        0px 0px 24px rgba(51, 111, 232, 0.8)
+      `,
+    });
+
+    container.appendChild(effect.domElement);
+
+    // ─── Geometry: BoxGeometry — preserved ──────────────────────────────────
+    skeletonGroup = new THREE.Group();
+    const cubeSize = 110; // preserved
+    const geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+
+    // ─── Shader: Thick Wireframe Skeleton — preserved exactly ────────────────
+    const thickWireframeShader = new THREE.ShaderMaterial({
+      uniforms: {
+        uEdgeThickness: { value: 0.08 }, // preserved
+      },
+      vertexShader: /* glsl */ `
+        varying vec3 vNormal;
+        varying vec3 vBarycentric;
+        varying vec3 vViewPosition;
+
+        void main() {
+          vNormal = normalize(normalMatrix * normal);
+
+          // UVs used as barycentric-style edge detection — preserved
+          vBarycentric = uv.xyx;
+
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          vViewPosition = -mvPosition.xyz;
+          gl_Position = projectionMatrix * mvPosition;
+        }
+      `,
+      fragmentShader: /* glsl */ `
+        varying vec3 vNormal;
+        varying vec3 vBarycentric;
+        varying vec3 vViewPosition;
+        uniform float uEdgeThickness;
+
+        void main() {
+          vec3 normal  = normalize(vNormal);
+          vec3 viewDir = normalize(vViewPosition);
+
+          // 1. Hard edge detection — creates the hollow skeleton look
+          float a = smoothstep(0.0, uEdgeThickness, vBarycentric.x);
+          float b = smoothstep(1.0 - uEdgeThickness, 1.0, vBarycentric.x);
+          float c = smoothstep(0.0, uEdgeThickness, vBarycentric.y);
+          float d = smoothstep(1.0 - uEdgeThickness, 1.0, vBarycentric.y);
+
+          float skeletonMask = (1.0 - a) + b + (1.0 - c) + d;
+
+          // Discard interior pixels — preserved
+          if (skeletonMask < 0.1) discard;
+
+          // 2. Lighting — gives skeleton bars structural depth
+          vec3 lightDir = normalize(vec3(1.0, 1.0, 1.5));
+          float diffuse = max(dot(normal, lightDir), 0.0);
+
+          float rim = pow(1.0 - max(dot(viewDir, normal), 0.0), 2.0);
+
+          // 3. Final composition — preserved
+          float brightness = diffuse * 0.8 + rim * 0.4;
+          brightness = smoothstep(0.1, 0.9, brightness);
+
+          gl_FragColor = vec4(vec3(brightness), 1.0);
+        }
+      `,
+    });
+
+    // ─── Arrangement: one on top of two — preserved exactly ─────────────────
+    const createSkeleton = (x: number, y: number, z: number) => {
+      const mesh = new THREE.Mesh(geometry, thickWireframeShader);
+      mesh.position.set(x, y, z);
+      return mesh;
+    };
+
+    const skeleton1 = createSkeleton(-cubeSize / 2 - 10, -cubeSize / 2, 0);
+    const skeleton2 = createSkeleton( cubeSize / 2 + 10, -cubeSize / 2, 0);
+    const skeleton3 = createSkeleton(0,                   cubeSize / 2 + 10, 0);
+
+    skeletonGroup.add(skeleton1, skeleton2, skeleton3);
+    scene.add(skeletonGroup);
+
+    // ─── Observers ──────────────────────────────────────────────────────────
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => { isInViewport = entry.isIntersecting; syncLoop(); },
+      { threshold: 0 }
+    );
+    intersectionObserver.observe(container);
+
+    const onVisibilityChange = () => { isTabVisible = !document.hidden; syncLoop(); };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    window.addEventListener('resize', onResize);
+    window.addEventListener('mousemove', onMouseMove);
+
+    // ─── Cleanup ────────────────────────────────────────────────────────────
+    document.addEventListener('astro:before-swap', () => {
+      stopLoop();
+      intersectionObserver.disconnect();
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('mousemove', onMouseMove);
+      renderer.dispose();
+      effect.domElement.remove();
+    }, { once: true });
+  }
+
+  // ─── Handlers ─────────────────────────────────────────────────────────────────
+  function onResize() {
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    effect.setSize(container.clientWidth, container.clientHeight);
+  }
+
+  function onMouseMove(e: MouseEvent) {
+    // Window-relative tracking — preserved from original
+    mouse.x =  (e.clientX / window.innerWidth)  * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  }
+
+  // ─── Animation loop ───────────────────────────────────────────────────────────
+  function animate() {
+    animFrameId = requestAnimationFrame(animate);
+
+    // Slow majestic rotation — preserved
+    skeletonGroup.rotation.y += 0.002;
+
+    // Hover parallax — preserved
+    skeletonGroup.rotation.x += (mouse.y * 0.4 - skeletonGroup.rotation.x) * 0.05;
+    skeletonGroup.rotation.z += (mouse.x * 0.4 - skeletonGroup.rotation.z) * 0.05;
+
+    // Drift parallax — preserved
+    skeletonGroup.position.x += (mouse.x * 12 - skeletonGroup.position.x) * 0.05;
+    skeletonGroup.position.y += (mouse.y * 12 - skeletonGroup.position.y) * 0.05;
+
+    effect.render(scene, camera);
+  }
+
+  // ─── Boot — IntersectionObserver decides when to start ───────────────────────
+  init();
+</script>

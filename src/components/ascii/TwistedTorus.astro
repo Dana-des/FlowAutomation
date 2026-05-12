@@ -203,7 +203,8 @@
 
     const vFOV = camera.fov * (Math.PI / 180);
     const visibleHeight = 2 * Math.tan(vFOV / 2) * camera.position.z;
-    const targetScale   = (visibleHeight * 1.2) / 170;
+    const mobileFactor = window.innerWidth < 768 ? 0.99 : 1.2;
+const targetScale  = (visibleHeight * mobileFactor) / 170;
 
     if (canAnimate) {
       torus.scale.x += (targetScale - torus.scale.x) * 0.02;

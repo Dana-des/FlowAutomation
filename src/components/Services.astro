@@ -2,10 +2,9 @@
 // src/sections/Services.astro
 import Text from "../components/Button.astro";
 import ServiceOne from '../components/ascii/ServiceOne.astro';
-// Uncomment as you create each:
-// import ServiceTwo   from '../components/ascii/ServiceTwo.astro';
-// import ServiceThree from '../components/ascii/ServiceThree.astro';
-// import ServiceFour  from '../components/ascii/ServiceFour.astro';
+import ServiceTwo   from '../components/ascii/ServiceTwo.astro';
+import ServiceThree from '../components/ascii/ServiceThree.astro';
+import ServiceFour  from '../components/ascii/ServiceFour.astro';
 
 const services = [
   {
@@ -91,25 +90,12 @@ const services = [
 
   <!-- Heading -->
   <div class="container max-w-content pt-section-m md:pt-section-d">
-    <h2 class="text-h2 text-center mb-40 lg:text-h2-lg">Systems we build</h2>
+    <h2 class="text-h2 text-center mb-20 md:mb-40 lg:text-h2-lg">Systems we build</h2>
   </div>
 
   <!-- ─── Service groups ──────────────────────────────────────────────────── -->
-  <!--
-    Each service group is an independent scroll unit:
-      1. A full-bleed ASCII background that sticks to the viewport while
-         the user scrolls through that group's cards (desktop only).
-      2. A two-column content grid that overlaps the ASCII via -mt-[100vh]
-         (desktop only; on mobile it just flows normally below the heading).
-         - LEFT column: sticky — stays centred while right side scrolls.
-         - RIGHT column: md:my-[100vh] creates the scroll space that keeps
-           the left sticky for the full height of the card list.
-
-    When all cards in a group are scrolled past, the sticky ASCII un-sticks
-    naturally and the next group's ASCII takes over. No JS needed for this —
-    it's pure CSS sticky behaviour.
-  -->
-  <div class="flex flex-col gap-20 pb-section-m md:pb-section-d">
+  
+  <div class="flex flex-col gap-20 md:gap-40 pb-section-m md:pb-section-d">
 
     {services.map((service, i) => (
       <div class="relative">
@@ -123,10 +109,9 @@ const services = [
         -->
         <div class="hidden md:block sticky top-0 h-screen overflow-hidden pointer-events-none z-0">
           {i === 0 && <ServiceOne />}
-          {/* Uncomment as you add more ASCII components: */}
-          {/* {i === 1 && <ServiceTwo />}   */}
-          {/* {i === 2 && <ServiceThree />} */}
-          {/* {i === 3 && <ServiceFour />}  */}
+          {i === 1 && <ServiceTwo />}
+          {i === 2 && <ServiceThree />}
+          {i === 3 && <ServiceFour />}
         </div>
 
         <!--
@@ -136,7 +121,7 @@ const services = [
           relative z-10: sits in front of the ASCII layer.
         -->
         <div class="container max-w-content relative z-10 md:-mt-[100vh]">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-6">
 
             <!-- LEFT: service info ─────────────────────────────────────── -->
             <!--
@@ -176,9 +161,7 @@ const services = [
 
                   <div class="h-px bg-line/10 mb-6"></div>
 
-                  <div class="outcomes-btn inline-block cursor-pointer">
-                    <Text variant="text">OUTCOMES +</Text>
-                  </div>
+                  <Text variant="text" class="justify-start outcomes-btn">OUTCOMES +</Text>
 
                   <div class="outcomes-content overflow-hidden max-h-0 opacity-0 transition-all duration-500 ease-in-out">
                     <div class="pt-4 flex flex-col gap-1 text-text/80">
