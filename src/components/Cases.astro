@@ -87,9 +87,8 @@ const cases: Case[] = [
 ];
 ---
 
-<section id="cases" class="relative z-10 bg-bg scroll-mt-[-40vh]" data-cases-section>
+<section id="cases" class="relative z-10 bg-bg" data-cases-section>
   <div class="page-container section">
-    <div class="md:relative">
       
       <div class="flex flex-col justify-center py-12 md:sticky md:top-0 md:min-h-screen md:py-0">
         <header 
@@ -100,8 +99,7 @@ const cases: Case[] = [
         </header>
       </div>
 
-      <div class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 md:pb-section-d pb-section-m">
-        {cases.map((card) => (
+      <div class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 md:pb-section-d md:mb-[100vh] pb-section-m">        {cases.map((card) => (
           <article class={`reveal-card card hover-border flex w-full flex-col gap-6 p-card bg-surface/4 backdrop-blur-card text-left ${card.desktopPlacement}`}>
             
             <div class="reveal-top delay-1 flex items-center justify-between text-small uppercase text-text/20">
@@ -139,7 +137,7 @@ const cases: Case[] = [
         ))}
       </div>
       
-    </div>
+
   </div>
 </section>
 

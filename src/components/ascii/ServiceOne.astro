@@ -73,9 +73,9 @@
       fontSize: '18px',
       fontWeight: '500',
       textShadow: `
-        0px 0px 4px rgba(51, 111, 232, 0.8),
-        0px 0px 12px rgba(51, 111, 232, 0.8),
-        0px 0px 24px rgba(51, 111, 232, 0.8)
+        0px 0px 4px rgba(72, 22, 238, 1),
+        0px 0px 12px rgba(72, 22, 238, 1),
+        0px 0px 24px rgba(72, 22, 238, 0.8)
       `,
     });
 
@@ -102,13 +102,16 @@
         void main() {
           vec3 normal  = normalize(vNormal);
           vec3 viewDir = normalize(vViewPosition);
-          float rim = pow(1.0 - max(dot(viewDir, normal), 0.0), 3.0);
+          float rim = pow(1.0 - max(dot(viewDir, normal), 0.0), 4.0);
           gl_FragColor = vec4(vec3(rim * 3.5), 1.0);
         }
       `,
     });
 
     flowObject = new THREE.Mesh(geometry, material);
+
+    flowObject.rotation.y = Math.PI / 4;
+
     scene.add(flowObject);
 
     const intersectionObserver = new IntersectionObserver(
@@ -147,7 +150,7 @@
 
   function animate() {
     animFrameId = requestAnimationFrame(animate);
-    flowObject.rotation.y += 0.001;
+    flowObject.rotation.y += 0.002;
     flowObject.rotation.x += 0.001;
     flowObject.rotation.x += (mouse.y * 0.3 - flowObject.rotation.x) * 0.05;
     flowObject.rotation.z += (mouse.x * 0.3 - flowObject.rotation.z) * 0.05;

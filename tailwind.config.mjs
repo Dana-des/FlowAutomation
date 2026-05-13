@@ -49,7 +49,7 @@ export default {
 				h6: ['16px', { lineHeight: '120%', letterSpacing: '-0.01em' }],
 				body: ['18px', { lineHeight: '140%', letterSpacing: '-0.01em' }],
 				button: ['14px', { lineHeight: '120%', fontWeight: '500', letterSpacing: '-0.01em' }],
-				small: ['13px', { lineHeight: '120%', letterSpacing: '-0.01em', fontWeight: '500' }],
+				small: ['13px', { lineHeight: '110%', letterSpacing: '-0.01em', fontWeight: '500' }],
 			},
 		},
 	},
