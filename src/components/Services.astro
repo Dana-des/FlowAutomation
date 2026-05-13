@@ -201,6 +201,7 @@ const services = [
         content.style.opacity   = '0';
         content.classList.remove('open');
         label.textContent = 'OUTCOMES +';
+        btn.classList.remove('is-active');
       } else {
         content.classList.add('open');
         content.style.maxHeight = content.scrollHeight + 'px';
