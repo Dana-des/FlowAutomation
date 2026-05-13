@@ -99,7 +99,8 @@ const cases: Case[] = [
         </header>
       </div>
 
-      <div class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 md:pb-section-d md:mb-[100vh] pb-section-m">        {cases.map((card) => (
+      <div class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-4 md:grid-cols-2 md:pb-section-d md:mb-[100vh] pb-section-m">       
+        {cases.map((card) => (
           <article class={`reveal-card card hover-border flex w-full flex-col gap-6 p-card backdrop-blur-card text-left ${card.desktopPlacement}`}>
             
             <div class="reveal-top delay-1 flex items-center justify-between text-small uppercase text-text/20">

@@ -63,7 +63,7 @@ const cards: Card[] = [
           class="mx-auto flex max-w-4xl flex-col items-center gap-8 text-center"
           data-about-text
         >
-          <h6 class="reveal-top text-h6 uppercase text-text/20">WHY US</h6>
+          <h6 class="reveal-top delay-2 text-h6 uppercase text-text/20">WHY US</h6>
           <h4
             class="about-reveal text-h4 text-text lg:text-h4-lg"
                 data-about-reveal
@@ -77,7 +77,7 @@ const cards: Card[] = [
       <div>
         <div class="h-[100vh] hidden md:block"></div>
 
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-3 md:grid-rows-4 md:mb-[100vh]">
+        <div class="grid grid-cols-1 sm:grid-cols-2 sm:gap-4 gap-6 md:grid-cols-3 md:grid-rows-4 md:mb-[100vh]">
           {cards.map((card) => (
             <article class={`reveal-card card hover-border ${card.desktopPlacement}`}>
               <div class="flex flex-col gap-8">
@@ -99,56 +99,66 @@ const cards: Card[] = [
 
 <script>
   function initAboutWordReveal() {
-  const section = document.querySelector("[data-about-section]");
-  const text = document.querySelector("[data-about-reveal]");
+    const section = document.querySelector("[data-about-section]");
+    const text = document.querySelector("[data-about-reveal]");
 
-  if (!section || !text) return;
+    if (!section || !text) return;
 
-  // 1. Use regex to split and avoid empty spans from newlines/tabs
-  const words = text.textContent.trim().split(/\s+/);
+    const words = text.textContent.trim().split(/\s+/);
+    text.innerHTML = words
+      .map((word) => `<span class="about-word">${word}</span>`)
+      .join(" ");
 
-  text.innerHTML = words
-    .map((word) => `<span class="about-word">${word}</span>`)
-    .join(" ");
+    const wordEls = [...text.querySelectorAll(".about-word")];
+    
+    // Define the desktop breakpoint (match Tailwind's md: 768px)
+    const desktopQuery = window.matchMedia("(min-width: 768px)");
 
-  const wordEls = [...text.querySelectorAll(".about-word")];
+    function update() {
+      // If not desktop, reset styles and exit
+      if (!desktopQuery.matches) {
+        wordEls.forEach((word) => {
+          word.style.opacity = "1";
+          word.style.filter = "none";
+        });
+        text.style.opacity = "1";
+        return;
+      }
 
-  function update() {
-    const rect = section.getBoundingClientRect();
-    const revealDistance = window.innerHeight * 1.2;
-    const scrolled = Math.max(-rect.top, 0);
-    const progress = Math.min(scrolled / revealDistance, 1);
+      const rect = section.getBoundingClientRect();
+      const revealDistance = window.innerHeight * 1.2;
+      const scrolled = Math.max(-rect.top, 0);
+      const progress = Math.min(scrolled / revealDistance, 1);
 
-    wordEls.forEach((word, index) => {
-      // 2. Adjust range so the last words have time to finish revealing
-      // Mapping index to a 0 -> 0.9 range instead of 0 -> 1.0
-      const wordProgress = (index / wordEls.length) * 0.9;
+      wordEls.forEach((word, index) => {
+        const wordProgress = (index / wordEls.length) * 0.9;
+        const localProgress = (progress - wordProgress) * 14;
+        const clamped = Math.max(0, Math.min(localProgress, 1));
 
-      // Increase multiplier slightly for a snappier feel
-      const localProgress = (progress - wordProgress) * 14;
+        word.style.opacity = clamped.toString();
+        word.style.filter = `blur(${12 - clamped * 12}px)`;
+      });
 
-      const clamped = Math.max(0, Math.min(localProgress, 1));
-
-      word.style.opacity = clamped;
-      word.style.filter = `blur(${12 - clamped * 12}px)`;
-    });
-
-    // Fade out logic remains the same
-    if (progress >= 1) {
-      const fadeProgress = Math.min(
-        (scrolled - revealDistance) / (window.innerHeight * 0.5),
-        1
-      );
-      text.style.opacity = 1 - fadeProgress * 0.8;
-    } else {
-      text.style.opacity = 1;
+      if (progress >= 1) {
+        const fadeProgress = Math.min(
+          (scrolled - revealDistance) / (window.innerHeight * 0.5),
+          1
+        );
+        text.style.opacity = (1 - fadeProgress * 0.8).toString();
+      } else {
+        text.style.opacity = "1";
+      }
     }
-  }
 
-  update();
-  window.addEventListener("scroll", update, { passive: true });
-  window.addEventListener("resize", update);
-}
+    // Initial check
+    update();
+
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    
+    // Also listen for the breakpoint change specifically
+    desktopQuery.addEventListener("change", update);
+  }
 
   initAboutWordReveal();
 </script>
