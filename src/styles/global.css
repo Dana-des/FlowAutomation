@@ -40,7 +40,7 @@
   }
 
   .card {
-    @apply rounded-none bg-surface/4 p-card backdrop-blur-card;
+    @apply rounded-none bg-surface/2 p-card backdrop-blur-card;
   }
 }
 
