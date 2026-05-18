@@ -9,6 +9,7 @@ import ServiceFour  from '../components/ascii/ServiceFour.astro';
 const services = [
   {
     id: " 01 ",
+    anchor: "automation-operations",
     title: "Automation & Operations",
     heading: "Manual work slowing you down?",
     description:
@@ -33,6 +34,7 @@ const services = [
   },
   {
     id: " 02 ",
+    anchor: "ai-interaction",
     title: "AI & Interaction",
     heading: "Slow responses killing growth?",
     description:
@@ -47,6 +49,7 @@ const services = [
   },
   {
     id: " 03 ",
+    anchor: "product-engineering",
     title: "Product & Engineering",
     heading: "Current tools don't fit?",
     description:
@@ -66,6 +69,7 @@ const services = [
   },
   {
     id: " 04 ",
+    anchor: "security",
     title: "Security",
     heading: "Unseen risks in your data?",
     description:
@@ -81,11 +85,6 @@ const services = [
 ];
 ---
 
-<!--
-  z-10 + bg-bg: this section sits above the fixed hero animation underneath.
-  The solid background covers the hero; the ASCII animations render on top of
-  that background, visible only where the 3D shape has bright rim pixels.
--->
 <section id="services" class="relative z-10 bg-bg text-text">
 
   <!-- Heading -->
@@ -98,15 +97,9 @@ const services = [
   <div class="flex flex-col gap-20 pb-section-m md:pb-section-d">
 
     {services.map((service, i) => (
-      <div class="relative">
+      <div class="relative" id={service.anchor}>
 
-        <!--
-          ASCII background layer — desktop only (hidden on mobile for perf).
-          sticky top-0 h-screen: always viewport-sized so Three.js renders
-          at a consistent resolution regardless of how tall the content is.
-          pointer-events-none: clicks pass through to the content above.
-          z-0: sits behind the content grid (z-10).
-        -->
+
         <div class="reveal-card delay-2 hidden md:block sticky top-0 h-screen overflow-hidden pointer-events-none z-0">
           {i === 0 && <ServiceOne />}
           {i === 1 && <ServiceTwo />}
@@ -130,7 +123,7 @@ const services = [
               vertically while the right column's cards scroll past.
             -->
             <div class="md:sticky md:top-0 md:h-screen flex md:items-center">
-              <div class=" flex flex-col gap-4 max-w-[520px]">
+              <div class="flex flex-col gap-4 max-w-[520px]">
                 <h6 class="reveal text-h6 text-ui uppercase">
                   [{service.id}] {service.title}
                 </h6>

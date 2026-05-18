@@ -31,20 +31,20 @@ const socials = [
         <!-- ABOUT -->
         <div class="flex flex-col gap-4">
           <h6 class="text-small uppercase font-normal text-text/20">About</h6>
-          <ul class="flex flex-col gap-0">
-            <li><a href="#why-us" class="text-small font-normal text-text/80 transition-colors duration-300 hover:text-text/60">Why us</a></li>
-            <li><a href="#tech-stack" class="text-small font-normal text-text/80 transition-colors duration-300 hover:text-text/60">Technology stack</a></li>
+          <ul class="flex flex-col gap-2">
+            <li><a href="#why-us" class="block text-small font-normal text-text/80 transition-colors duration-300 hover:text-text/60">Why us</a></li>
+            <li><a href="#tech-stack" class="block text-small font-normal text-text/80 transition-colors duration-300 hover:text-text/60">Technology stack</a></li>
           </ul>
         </div>
 
         <!-- SERVICES -->
         <div class="flex flex-col gap-4">
           <h6 class="text-small uppercase font-normal text-text/20">Services</h6>
-          <ul class="flex flex-col gap-0">
-            <li><a href="#" class="text-small font-normal text-text/80 transition-colors duration-300 hover:text-text/60">Automation & Operations</a></li>
-            <li><a href="#" class="text-small font-normal text-text/80 transition-colors duration-300 hover:text-text/60">AI & Interaction</a></li>
-            <li><a href="#" class="text-small font-normal text-text/80 transition-colors duration-300 hover:text-text/60">Product & Engineering</a></li>
-            <li><a href="#" class="text-small font-normal text-text/80 transition-colors duration-300 hover:text-text/60">Security</a></li>
+          <ul class="flex flex-col gap-2">
+            <li><a href="#automation-operations" class="block text-small font-normal text-text/80 transition-colors duration-300 hover:text-text/60">Automation & Operations</a></li>
+            <li><a href="#ai-interaction" class="block text-small font-normal text-text/80 transition-colors duration-300 hover:text-text/60">AI & Interaction</a></li>
+            <li><a href="#product-engineering" class="block text-small font-normal text-text/80 transition-colors duration-300 hover:text-text/60">Product & Engineering</a></li>
+            <li><a href="#security" class="block text-small font-normal text-text/80 transition-colors duration-300 hover:text-text/60">Security</a></li>
           </ul>
         </div>
 
@@ -86,45 +86,45 @@ const socials = [
   <div class="footer-marquee-track">
     <span class="huge-text">FlowAutomation</span>
     <span class="huge-text">FlowAutomation</span>
+    <span class="huge-text">FlowAutomation</span>
+    <span class="huge-text">FlowAutomation</span>
   </div>
 </div>
 
-
-
-  </div>
-</footer>
-
 <style>
   .footer-marquee {
-  width: 100%;
-  overflow: visible;
-}
-
-.footer-marquee-track {
-  display: flex;
-  width: max-content;
-  animation: marquee 30s linear infinite;
-}
-
-.huge-text {
-  flex: 0 0 auto;
-  padding-right: 0.25em;
-  font-family: Sora, sans-serif;
-  font-size: clamp(3rem, 13vw, 180px);
-  line-height: 0.85;
-  letter-spacing: -0.04em;
-  white-space: nowrap;
-  color: rgb(var(--c-ui));
-}
-
-@keyframes marquee {
-  from {
-    transform: translateX(0);
+    width: 100%;
+    /* FIX 1: Prevent text from spilling out and creating rogue horizontal window scrollbars */
+    overflow: visible; 
   }
 
-  to {
-    transform: translateX(-50%);
+  .footer-marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 50s linear infinite;
   }
-}
 
+  .huge-text {
+    flex: 0 0 auto;
+    /* FIX 2: Changed to a fixed rem padding. Using font-relative 'em' padding 
+       causes sub-pixel rounding errors that make the loop jitter and skip. */
+    padding-right: 4rem; 
+    font-family: Sora, sans-serif;
+    font-size: clamp(3rem, 13vw, 180px);
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+    color: rgb(var(--c-ui));
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      /* FIX 3: Shifting -50% of a 4-item track moves exactly 2 items out of view. 
+         The remaining 2 items perfectly mirror the starting position, creating an invisible reset. */
+      transform: translateX(-50%);
+    }
+  }
 </style>

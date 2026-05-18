@@ -3,23 +3,14 @@
 ---
 
 <div id="preloader" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden pointer-events-auto">
-  <!-- 
-    SHUTTERS: 
-    We apply the 'bg-bg' directly to the HTML to avoid the @apply error.
-    These two panels create the high-end vertical split.
-  -->
   <div id="shutter-top" class="absolute top-0 left-0 w-full h-1/2 bg-bg transition-transform duration-[900ms] ease-in-out"></div>
   <div id="shutter-bottom" class="absolute bottom-0 left-0 w-full h-1/2 bg-bg transition-transform duration-[900ms] ease-in-out"></div>
 
-  <!-- TEXT: 
-    Using your 'text-body' and 'text-text' classes. 
-  -->
   <div id="code" class="relative z-10 text-h6 text-text font-sora whitespace-pre tracking-tight leading-[1.4] transition-all duration-[700ms] ease-in-out"></div>
 </div>
 
 <style>
-  /* 
-    We only keep standard CSS here to avoid Tailwind v4 isolation issues.
+  /* We only keep standard CSS here to avoid Tailwind v4 isolation issues.
   */
   :global(.code-cursor) {
     display: inline-block;
@@ -61,8 +52,9 @@
     
     if (!preloader || !container || !shutterTop || !shutterBottom) return;
 
-    const originalLines = ["<div>", "  <p>Loading</p>", "</div>"];
-    const lines = ["", "", ""];
+    // Removed the outer <div> and </div> strings and adjusted initial tracking array size
+    const originalLines = ["<p>Loading</p>"];
+    const lines = [""];
     let lineIndex = 0;
     let charIndex = 0;
 
